@@ -32,6 +32,8 @@ if _env_path.exists():
 
 from orchestrator import orchestrator
 from db import save_eda_cache, get_eda_cache, save_ideas_pool, get_ideas_pool
+from agent import agent as research_agent
+from project_state import ProjectState, save_project, load_project, delete_project, list_projects
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "mimic-research-agent-mvp-secret-key")
@@ -443,6 +445,113 @@ def api_stream_pipeline():
             "Connection": "keep-alive",
         }
     )
+
+
+# ============================================================
+# Agent API
+# ============================================================
+
+@app.route("/api/agent/chat", methods=["POST"])
+def api_agent_chat():
+    """Agent chat endpoint with SSE streaming."""
+    data = request.json if request.is_json else {}
+    user_message = data.get("message", "").strip()
+    project_id = data.get("project_id", "")
+
+    if not user_message:
+        return jsonify({"error": "message is required"}), 400
+
+    project = load_project(project_id) if project_id else None
+    if not project:
+        project = ProjectState(data_dir=DATA_DIR)
+
+    # Always merge seed data (only fills missing — defense against state loss)
+    seed = data.get("_seed", {})
+    if seed.get("eda") and not project.eda_summary:
+        project.eda_summary = seed["eda"]
+    if seed.get("ideas") and not project.ideas_pool:
+        project.ideas_pool = seed["ideas"]
+    if seed.get("selected_idea") and not project.selected_idea:
+        project.selected_idea = seed["selected_idea"]
+    if seed:
+        save_project(project)
+
+    def generate():
+        try:
+            for event in research_agent.chat(project, user_message):
+                yield f"data: {json.dumps(event, ensure_ascii=False, default=str)}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'event': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
+
+    return Response(
+        stream_with_context(generate()),
+        mimetype="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
+    )
+
+
+@app.route("/api/projects", methods=["GET"])
+def api_list_projects():
+    return jsonify({"projects": list_projects()})
+
+
+@app.route("/api/projects", methods=["POST"])
+def api_create_project():
+    data = request.json if request.is_json else {}
+    project = ProjectState(
+        data_dir=DATA_DIR,
+        title=data.get("title", ""),
+        data_source=data.get("data_source", "platform"),
+    )
+    save_project(project)
+    return jsonify(project.to_dict())
+
+
+@app.route("/api/projects/<project_id>", methods=["GET"])
+def api_get_project(project_id):
+    project = load_project(project_id)
+    if not project: return jsonify({"error": "Project not found"}), 404
+    return jsonify(project.to_dict())
+
+
+@app.route("/api/projects/<project_id>", methods=["DELETE"])
+def api_delete_project(project_id):
+    delete_project(project_id)
+    return jsonify({"status": "deleted"})
+
+
+@app.route("/api/projects/<project_id>/seed", methods=["POST"])
+def api_project_seed(project_id):
+    """Seed agent project with data from the old pipeline.
+    Only fills in missing data — never overwrites data the agent already produced."""
+    project = load_project(project_id)
+    if not project: return jsonify({"error": "Project not found"}), 404
+
+    data = request.json if request.is_json else {}
+    # Only seed if missing (don't overwrite agent's own work)
+    if data.get("eda") and not project.eda_summary:
+        project.eda_summary = data["eda"]
+    if data.get("ideas") and not project.ideas_pool:
+        project.ideas_pool = data["ideas"]
+    if data.get("selected_idea") and not project.selected_idea:
+        project.selected_idea = data["selected_idea"]
+
+    save_project(project)
+    return jsonify({"status": "seeded", "project": project.to_dict()})
+
+
+@app.route("/api/projects/<project_id>/select-idea", methods=["POST"])
+def api_agent_select_idea(project_id):
+    project = load_project(project_id)
+    if not project: return jsonify({"error": "Project not found"}), 404
+    idea_id = request.json.get("idea_id", "") if request.is_json else ""
+    for idea in project.ideas_pool:
+        if idea.get("id") == idea_id:
+            project.selected_idea = idea
+            project.status = "analyzing"
+            save_project(project)
+            return jsonify({"status": "selected", "idea": idea})
+    return jsonify({"error": f"Idea {idea_id} not found"}), 404
 
 
 # ---- Data info ----

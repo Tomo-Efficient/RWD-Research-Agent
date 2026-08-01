@@ -33,17 +33,15 @@ def _get_skill2_system() -> str:
 ## CRITICAL OUTPUT FORMAT REMINDER
 You MUST respond with ONLY a valid JSON object containing an "ideas" array with EXACTLY 50 items.
 Each idea in the array MUST have these fields:
-- id (H001 through H050), title_cn, title_en
-- research_question_cn, research_question_en
-- hypothesis_cn, hypothesis_en
-- rationale_cn, rationale_en
+- id (H001 through H050), title
+- research_question, hypothesis, rationale
 - pico (object with P, I, C, O — Chinese values)
-- data_variables (array of English variable names from the available data)
+- data_variables (array of variable names from the available data)
 - suggested_method, target_paper_type
 - scores (object: innovation, data_verifiability, clinical_significance, statistical_feasibility, publication_potential, risk — each 1-5)
 - total_score
 
-ALL *_cn fields MUST be in Chinese. ALL *_en fields MUST be in English.
+ALL text fields MUST be in Chinese.
 Do NOT wrap in markdown code blocks. Output RAW JSON only."""
 
 
@@ -219,7 +217,7 @@ def generate_report(eda_report: dict, ideas: dict, selected_idea: dict, stats_re
                     {"role": "user", "content": context},
                 ],
                 temperature=0.3,
-                max_tokens=16384,
+                max_tokens=32768,
             )
             text = resp.choices[0].message.content
             if text:
@@ -327,12 +325,9 @@ right here. Write the COMPLETE manuscript using ONLY this inline data.
 ## Study Context
 
 ### Selected Research Idea
-Title (CN): {selected_idea.get('title_cn', selected_idea.get('title', 'N/A'))}
-Title (EN): {selected_idea.get('title_en', selected_idea.get('title', 'N/A'))}
-Research Question (CN): {selected_idea.get('research_question_cn', selected_idea.get('research_question', 'N/A'))}
-Research Question (EN): {selected_idea.get('research_question_en', selected_idea.get('research_question', 'N/A'))}
-Hypothesis (CN): {selected_idea.get('hypothesis_cn', selected_idea.get('hypothesis', 'N/A'))}
-Hypothesis (EN): {selected_idea.get('hypothesis_en', selected_idea.get('hypothesis', 'N/A'))}
+Title: {selected_idea.get('title_cn') or selected_idea.get('title', 'N/A')}
+Research Question: {selected_idea.get('research_question_cn') or selected_idea.get('research_question', 'N/A')}
+Hypothesis: {selected_idea.get('hypothesis_cn') or selected_idea.get('hypothesis', 'N/A')}
 
 ### PICO Framework
 Population: {_get_pico_field(selected_idea, 'P')}
@@ -353,26 +348,21 @@ N = {stats_results.get('sample_size', 'N/A')}
 ### Clinical Interpretation (THIS IS YOUR evidence)
 {stats_results.get('interpretation', 'N/A')}
 
-## Task — WRITE A FULL-LENGTH MANUSCRIPT
-Write a COMPLETE, detailed IMRAD clinical research manuscript. Every section must be
+## Task — WRITE A FULL-LENGTH MANUSCRIPT IN CHINESE
+Write a COMPLETE, detailed IMRAD clinical research manuscript in Chinese. Every section must be
 substantive — at least 3-4 paragraphs for Introduction, Methods, Results, and Discussion.
 Use ALL the real numbers from the Statistical Results above.
 
-**Each version must contain ALL of these sections with ## headers:**
-- Title
-- Abstract (structured: Background, Objective, Design, Results, Conclusions)
-- Introduction (at least 300 words — review sepsis literature and explain rationale)
-- Methods (Study Design, Setting, Population, Variables, Statistical Analysis)
-- Results (Cohort characteristics, Primary analysis, Secondary analyses)
-- Discussion (Main findings, Comparison with literature, Limitations, Implications)
-- References (at least 5 real references in Vancouver style)
+**Must contain ALL of these sections with ## headers:**
+- 标题 (Title)
+- 摘要 (Abstract — structured: 背景, 目的, 设计, 结果, 结论)
+- 引言 (Introduction — at least 300 words)
+- 方法 (Methods — Study Design, Setting, Population, Variables, Statistical Analysis)
+- 结果 (Results — Cohort characteristics, Primary analysis, Secondary analyses)
+- 讨论 (Discussion — Main findings, Comparison with literature, Limitations, Implications)
+- 参考文献 (References — at least 5 real references in Vancouver style)
 
-## BILINGUAL OUTPUT — TWO FULL PAPERS REQUIRED
-Write TWO COMPLETE versions separated by a line containing exactly "---":
-1. FIRST: Chinese manuscript (中文论文 — ALL sections in Chinese)
-2. SECOND: English manuscript (ALL sections in English)
-
-Each version must be AT LEAST 2000 words. Do NOT shorten. Do NOT wrap in JSON. Write in Markdown."""
+Write at LEAST 2000 words in Chinese. Do NOT shorten. Do NOT wrap in JSON. Write in Markdown."""
 
 
 def _parse_llm_json(text: str, mode: str) -> dict:
@@ -414,72 +404,69 @@ def _template_papers(eda_report: dict) -> dict:
 def _generate_template_ideas(eda_report: dict, mode: str) -> dict:
     ideas = [
         {"id": "H001",
-         "title_cn": "乳酸与脓毒症28天死亡率：基于MIMIC-IV的回顾性研究", "title_en": "Lactate and 28-Day Mortality in Sepsis: A MIMIC-IV Study",
-         "research_question_cn": "入ICU首个24小时乳酸水平是否与住院死亡率独立相关？", "research_question_en": "Is first-24h lactate independently associated with hospital mortality?",
-         "hypothesis_cn": "首24h乳酸升高（>2 mmol/L）可独立预测住院死亡风险。", "hypothesis_en": "Elevated lactate independently predicts in-hospital mortality.",
-         "rationale_cn": "验证乳酸-死亡率关联在本队列中的稳健性，为后续风险分层模型提供基线证据。", "rationale_en": "Validate the well-established lactate-mortality association in this MIMIC-IV sepsis cohort.",
-         "pico": {"P": "脓毒症 ICU 患者", "I": "乳酸升高（>2 mmol/L）", "C": "乳酸正常", "O": "住院死亡"}, "data_variables": ["lab_lactate", "hospital_expire_flag", "anchor_age", "gender"], "suggested_method": "Logistic regression", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 5, "statistical_feasibility": 5, "publication_potential": 4, "risk": 4}, "total_score": 26},
+         "title": "乳酸与脓毒症28天死亡率：基于MIMIC-IV的回顾性研究",
+         "research_question": "入ICU首个24小时乳酸水平是否与住院死亡率独立相关？",
+         "hypothesis": "首24h乳酸升高（>2 mmol/L）可独立预测住院死亡风险。",
+         "rationale": "验证乳酸-死亡率关联在本队列中的稳健性，为后续风险分层模型提供基线证据。",
+         "pico": {"P": "脓毒症 ICU 患者", "I": "乳酸升高（>2 mmol/L）", "C": "乳酸正常", "O": "住院死亡"}, "data_variables": ["lab_lactate", "hospital_expire_flag", "anchor_age", "gender"], "suggested_method": "Logistic 回归", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 5, "statistical_feasibility": 5, "publication_potential": 4, "risk": 4}, "total_score": 26},
         {"id": "H002",
-         "title_cn": "血糖变异性与脓毒症死亡率的相关性研究", "title_en": "Glucose Variability and Mortality in Sepsis",
-         "research_question_cn": "血糖变异系数（CV）能否独立于平均血糖预测死亡率？", "research_question_en": "Does glucose CV predict mortality independently of mean glucose?",
-         "hypothesis_cn": "首24h内血糖波动越大，住院死亡风险越高。", "hypothesis_en": "Higher glucose variability is independently associated with mortality.",
-         "rationale_cn": "血糖变异性在脓毒症中研究较少，但可能比单次血糖值更具预后价值。", "rationale_en": "Glucose variability is under-studied in sepsis, potentially more prognostic than single glucose values.",
-         "pico": {"P": "脓毒症 ICU", "I": "高血糖 CV（>25%）", "C": "低血糖 CV", "O": "住院死亡"}, "data_variables": ["lab_glucose", "hospital_expire_flag"], "suggested_method": "Logistic regression with CV quartiles", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 4, "clinical_significance": 4, "statistical_feasibility": 4, "publication_potential": 4, "risk": 3}, "total_score": 23},
+         "title": "血糖变异性与脓毒症死亡率的相关性研究",
+         "research_question": "血糖变异系数（CV）能否独立于平均血糖预测死亡率？",
+         "hypothesis": "首24h内血糖波动越大，住院死亡风险越高。",
+         "rationale": "血糖变异性在脓毒症中研究较少，但可能比单次血糖值更具预后价值。",
+         "pico": {"P": "脓毒症 ICU", "I": "高血糖 CV（>25%）", "C": "低血糖 CV", "O": "住院死亡"}, "data_variables": ["lab_glucose", "hospital_expire_flag"], "suggested_method": "Logistic 回归（CV四分位）", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 4, "clinical_significance": 4, "statistical_feasibility": 4, "publication_potential": 4, "risk": 3}, "total_score": 23},
         {"id": "H003",
-         "title_cn": "乳酸/白蛋白比值在脓毒症预后中的增量价值", "title_en": "Lactate-to-Albumin Ratio in Sepsis Prognosis",
-         "research_question_cn": "LAR 对死亡率的预测能力是否优于单独使用乳酸？", "research_question_en": "Is LAR superior to lactate alone for mortality prediction?",
-         "hypothesis_cn": "LAR 的 AUC 高于乳酸单独使用，可更全面反映组织灌注与营养状态。", "hypothesis_en": "LAR has higher AUC than lactate alone, reflecting both perfusion and nutritional status.",
-         "rationale_cn": "复合生物标志物整合灌注与营养双重信息，可能优于单一指标。", "rationale_en": "Composite biomarkers combining perfusion and nutrition may outperform single markers.",
-         "pico": {"P": "脓毒症 ICU", "I": "高 LAR（>0.8）", "C": "低 LAR", "O": "住院死亡"}, "data_variables": ["lab_lactate", "lab_albumin", "hospital_expire_flag"], "suggested_method": "ROC comparison (DeLong) + logistic regression", "target_paper_type": "original_research", "scores": {"innovation": 5, "data_verifiability": 3, "clinical_significance": 4, "statistical_feasibility": 4, "publication_potential": 5, "risk": 3}, "total_score": 24},
+         "title": "乳酸/白蛋白比值在脓毒症预后中的增量价值",
+         "research_question": "LAR 对死亡率的预测能力是否优于单独使用乳酸？",
+         "hypothesis": "LAR 的 AUC 高于乳酸单独使用，可更全面反映组织灌注与营养状态。",
+         "rationale": "复合生物标志物整合灌注与营养双重信息，可能优于单一指标。",
+         "pico": {"P": "脓毒症 ICU", "I": "高 LAR（>0.8）", "C": "低 LAR", "O": "住院死亡"}, "data_variables": ["lab_lactate", "lab_albumin", "hospital_expire_flag"], "suggested_method": "ROC 比较（DeLong）+ Logistic 回归", "target_paper_type": "original_research", "scores": {"innovation": 5, "data_verifiability": 3, "clinical_significance": 4, "statistical_feasibility": 4, "publication_potential": 5, "risk": 3}, "total_score": 24},
         {"id": "H004",
-         "title_cn": "阴离子间隙与脓毒症死亡率：独立于pH的预后价值", "title_en": "Anion Gap and Mortality in Sepsis: Prognostic Value Beyond pH",
-         "research_question_cn": "阴离子间隙是否独立于 pH 和碳酸氢盐预测脓毒症死亡？", "research_question_en": "Is anion gap independently associated with mortality after adjusting for pH?",
-         "hypothesis_cn": "高阴离子间隙在调整 pH 后仍与死亡率显著相关。", "hypothesis_en": "Elevated anion gap independently predicts mortality after pH adjustment.",
-         "rationale_cn": "阴离子间隙临床常规可获取但作为预后标志物未充分利用。", "rationale_en": "Anion gap is routinely measured but underused as a prognostic marker in sepsis.",
-         "pico": {"P": "脓毒症 ICU", "I": "高阴离子间隙", "C": "正常阴离子间隙", "O": "住院死亡"}, "data_variables": ["lab_aniongap", "lab_ph", "lab_bicarbonate", "hospital_expire_flag"], "suggested_method": "Logistic regression + mediation analysis", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 5, "clinical_significance": 3, "statistical_feasibility": 5, "publication_potential": 3, "risk": 4}, "total_score": 24},
+         "title": "阴离子间隙与脓毒症死亡率：独立于pH的预后价值",
+         "research_question": "阴离子间隙是否独立于 pH 和碳酸氢盐预测脓毒症死亡？",
+         "hypothesis": "高阴离子间隙在调整 pH 后仍与死亡率显著相关。",
+         "rationale": "阴离子间隙临床常规可获取但作为预后标志物未充分利用。",
+         "pico": {"P": "脓毒症 ICU", "I": "高阴离子间隙", "C": "正常阴离子间隙", "O": "住院死亡"}, "data_variables": ["lab_aniongap", "lab_ph", "lab_bicarbonate", "hospital_expire_flag"], "suggested_method": "Logistic 回归 + 中介分析", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 5, "clinical_significance": 3, "statistical_feasibility": 5, "publication_potential": 3, "risk": 4}, "total_score": 24},
         {"id": "H005",
-         "title_cn": "红细胞分布宽度作为脓毒症早期预后标志物", "title_en": "RDW as an Early Prognostic Marker in Sepsis",
-         "research_question_cn": "入院 RDW 能否独立于血红蛋白预测脓毒症死亡率？", "research_question_en": "Does admission RDW predict mortality independently of hemoglobin?",
-         "hypothesis_cn": "RDW 升高可独立预测住院死亡，且不依赖于贫血状态。", "hypothesis_en": "Elevated RDW independently predicts mortality, not confounded by anemia.",
-         "rationale_cn": "RDW 作为新兴炎症生物标志物需在 ICU 队列中验证其预后价值。", "rationale_en": "RDW is an emerging inflammatory biomarker needing ICU cohort validation.",
-         "pico": {"P": "脓毒症 ICU", "I": "高 RDW（>14.5%）", "C": "正常 RDW", "O": "住院死亡"}, "data_variables": ["lab_rdw", "lab_hemoglobin", "hospital_expire_flag"], "suggested_method": "Logistic / Cox regression", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 4, "statistical_feasibility": 5, "publication_potential": 3, "risk": 4}, "total_score": 24},
+         "title": "红细胞分布宽度作为脓毒症早期预后标志物",
+         "research_question": "入院 RDW 能否独立于血红蛋白预测脓毒症死亡率？",
+         "hypothesis": "RDW 升高可独立预测住院死亡，且不依赖于贫血状态。",
+         "rationale": "RDW 作为新兴炎症生物标志物需在 ICU 队列中验证其预后价值。",
+         "pico": {"P": "脓毒症 ICU", "I": "高 RDW（>14.5%）", "C": "正常 RDW", "O": "住院死亡"}, "data_variables": ["lab_rdw", "lab_hemoglobin", "hospital_expire_flag"], "suggested_method": "Logistic / Cox 回归", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 4, "statistical_feasibility": 5, "publication_potential": 3, "risk": 4}, "total_score": 24},
         {"id": "H006",
-         "title_cn": "脓毒症死亡率的性别差异：生物标志物校正后的再评估", "title_en": "Gender Differences in Sepsis Mortality After Biomarker Adjustment",
-         "research_question_cn": "性别差异在校正关键生物标志物后是否仍然存在？", "research_question_en": "Do gender differences persist after adjusting for key biomarkers?",
-         "hypothesis_cn": "女性脓毒症患者住院死亡率低于男性，且独立于乳酸等生物标志物。", "hypothesis_en": "Female gender is associated with lower mortality, independent of lactate and other biomarkers.",
-         "rationale_cn": "脓毒症中的性别差异已有报道但机制未明，需用标准化生物标志物验证。", "rationale_en": "Gender differences in sepsis are documented but mechanisms unclear; needs standardized biomarker validation.",
-         "pico": {"P": "脓毒症 ICU", "I": "女性", "C": "男性", "O": "住院死亡"}, "data_variables": ["gender", "hospital_expire_flag", "anchor_age", "lab_lactate"], "suggested_method": "Logistic regression with gender × biomarker interactions", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 4, "statistical_feasibility": 5, "publication_potential": 4, "risk": 4}, "total_score": 25},
+         "title": "脓毒症死亡率的性别差异：生物标志物校正后的再评估",
+         "research_question": "性别差异在校正关键生物标志物后是否仍然存在？",
+         "hypothesis": "女性脓毒症患者住院死亡率低于男性，且独立于乳酸等生物标志物。",
+         "rationale": "脓毒症中的性别差异已有报道但机制未明，需用标准化生物标志物验证。",
+         "pico": {"P": "脓毒症 ICU", "I": "女性", "C": "男性", "O": "住院死亡"}, "data_variables": ["gender", "hospital_expire_flag", "anchor_age", "lab_lactate"], "suggested_method": "Logistic 回归（含性别交互项）", "target_paper_type": "original_research", "scores": {"innovation": 3, "data_verifiability": 5, "clinical_significance": 4, "statistical_feasibility": 5, "publication_potential": 4, "risk": 4}, "total_score": 25},
         {"id": "H007",
-         "title_cn": "基于常规实验室指标的脓毒症死亡风险简易评分", "title_en": "Simplified Lab-Based Mortality Risk Score for Sepsis",
-         "research_question_cn": "精简实验室模型对死亡率的预测能力能否匹敌 SOFA？", "research_question_en": "Can a parsimonious lab model match SOFA for mortality prediction?",
-         "hypothesis_cn": "5-6 项常规实验室指标组合可达到与 SOFA 相近的 AUC。", "hypothesis_en": "A 5-6 routine lab panel achieves comparable AUC to SOFA score.",
-         "rationale_cn": "简易评分在床旁具有更高临床实用性，可快速识别高危患者。", "rationale_en": "Simplified bedside scores have higher clinical utility for rapid risk stratification.",
-         "pico": {"P": "脓毒症 ICU", "I": "高风险实验室评分", "C": "低风险评分", "O": "住院死亡"}, "data_variables": ["lab_lactate", "lab_creatinine", "lab_platelet", "lab_bilirubin_total", "lab_wbc", "hospital_expire_flag"], "suggested_method": "LASSO logistic regression + bootstrap AUC", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 4, "clinical_significance": 5, "statistical_feasibility": 3, "publication_potential": 5, "risk": 3}, "total_score": 24},
+         "title": "基于常规实验室指标的脓毒症死亡风险简易评分",
+         "research_question": "精简实验室模型对死亡率的预测能力能否匹敌 SOFA？",
+         "hypothesis": "5-6 项常规实验室指标组合可达到与 SOFA 相近的 AUC。",
+         "rationale": "简易评分在床旁具有更高临床实用性，可快速识别高危患者。",
+         "pico": {"P": "脓毒症 ICU", "I": "高风险实验室评分", "C": "低风险评分", "O": "住院死亡"}, "data_variables": ["lab_lactate", "lab_creatinine", "lab_platelet", "lab_bilirubin_total", "lab_wbc", "hospital_expire_flag"], "suggested_method": "LASSO Logistic 回归 + Bootstrap AUC", "target_paper_type": "original_research", "scores": {"innovation": 4, "data_verifiability": 4, "clinical_significance": 5, "statistical_feasibility": 3, "publication_potential": 5, "risk": 3}, "total_score": 24},
     ]
     return {"skill": "skill2_ideas", "status": "completed", "mode": mode, "skill_doc_loaded": len(_SKILL2.skill_md) > 0, "ideas": sorted(ideas, key=lambda x: x["total_score"], reverse=True)}
 
 
 def _generate_template_report(selected_idea: dict, stats_results: dict) -> str:
-    """Template IMRAD manuscript — bilingual."""
-    title_cn = selected_idea.get("title_cn") or selected_idea.get("title", "临床研究报告")
-    title_en = selected_idea.get("title_en") or selected_idea.get("title", "Clinical Research Report")
-    rq_cn = selected_idea.get("research_question_cn") or selected_idea.get("research_question", "")
-    rq_en = selected_idea.get("research_question_en") or selected_idea.get("research_question", "")
+    """Template IMRAD manuscript — Chinese only."""
+    title = selected_idea.get("title_cn") or selected_idea.get("title", "临床研究报告")
+    rq = selected_idea.get("research_question_cn") or selected_idea.get("research_question", "")
     pico_raw = selected_idea.get("pico", {})
     pico = pico_raw if isinstance(pico_raw, dict) else {}
     n = stats_results.get("sample_size", "N/A")
     results = stats_results.get("results", [])
     sig = [r for r in results if r.get("significant")]
-    summary = " ".join([f"{r.get('label', '')}: p={r.get('p_value')}." for r in sig[:2]]) if sig else "No significant associations."
-    summary_cn = " ".join([f"{r.get('label', '')}: p={r.get('p_value')}。" for r in sig[:2]]) if sig else "未发现显著关联。"
-    return f"""# {title_cn}
+    summary = " ".join([f"{r.get('label', '')}: p={r.get('p_value')}。" for r in sig[:2]]) if sig else "未发现显著关联。"
+    return f"""# {title}
 
 ## 摘要
 **背景：** 脓毒症死亡率居高不下，基于生物标志物的风险分层至关重要。
-**目的：** {rq_cn}
+**目的：** {rq}
 **设计：** 基于 MIMIC-IV（2008–2019）回顾性队列研究。N={n} 例脓毒症 ICU 患者。
 **暴露：** {pico.get('I', '')}。**结局：** {pico.get('O', '')}。
-**结果：** {summary_cn}
+**结果：** {summary}
 **结论：** 证据支持 {pico.get('I', '')} 与 {pico.get('O', '')} 之间的关联。
 
 ## 引言
@@ -492,7 +479,7 @@ def _generate_template_report(selected_idea: dict, stats_results: dict) -> str:
 统计方法：Mann-Whitney U 秩和检验、逻辑回归，α=0.05。
 
 ## 结果
-队列规模：N={n}。{summary_cn}
+队列规模：N={n}。{summary}
 
 ## 讨论
 本研究发现与既往脓毒症生物标志物研究一致。局限性包括单中心回顾性设计、可能存在残余混杂。
@@ -501,42 +488,7 @@ def _generate_template_report(selected_idea: dict, stats_results: dict) -> str:
 1. Johnson AEW et al. MIMIC-IV. Sci Data. 2023.
 2. Singer M et al. Sepsis-3. JAMA. 2016.
 
-*由 RWD Research Agent 生成 — 遵循 Skill 4 规范*
-
----
-
-# {title_en}
-
-## Abstract
-**Background:** Sepsis mortality remains high. Biomarker-based risk stratification is essential.
-**Objective:** {rq_en}
-**Design:** Retrospective cohort using MIMIC-IV (2008–2019). N={n} sepsis ICU patients.
-**Exposure:** {pico.get('I', '')}. **Outcome:** {pico.get('O', '')}.
-**Results:** {summary}
-**Conclusions:** Evidence supports the association between {pico.get('I', '')} and {pico.get('O', '')}.
-
-## Introduction
-Sepsis is life-threatening organ dysfunction. Despite advances, mortality is 15–30%.
-{pico.get('I', '')} has emerged as a potential biomarker. We investigated its association
-with {pico.get('O', '')} using MIMIC-IV.
-
-## Methods
-Retrospective cohort study. MIMIC-IV (2008–2019). Adults with sepsis, ICU ≥ 24h.
-Exposure: {pico.get('I', '')}. Outcome: {pico.get('O', '')}.
-Statistics: Mann-Whitney U, logistic regression, α=0.05.
-
-## Results
-Cohort: N={n}. {summary}
-
-## Discussion
-These findings align with prior sepsis biomarker research. Limitations include
-single-center design and potential residual confounding.
-
-## References
-1. Johnson AEW et al. MIMIC-IV. Sci Data. 2023.
-2. Singer M et al. Sepsis-3. JAMA. 2016.
-
-*Generated by RWD Research Agent — following Skill 4 specification*
+*由 RWD Research Agent 生成*
 """
 
 

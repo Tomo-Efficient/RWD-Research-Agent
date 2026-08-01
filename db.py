@@ -187,7 +187,7 @@ def init_db():
 def save_run(run_id: str, session, mode: str = "ai_assisted"):
     """Save a complete workflow run. Persists across deploys with Upstash REST."""
     idea = session.selected_idea or {}
-    idea_title = idea.get("title_cn") or idea.get("title", "")
+    idea_title = idea.get("title") or idea.get("title_cn", "")
 
     def to_json(obj):
         if obj is None:

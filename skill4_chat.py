@@ -233,7 +233,7 @@ Please generate the Python code to execute the agreed statistical tests."""
 
 
 def interpret_results(idea: dict, exec_result: dict, chat_history: list) -> dict:
-    """LLM interprets the statistical results in bilingual format."""
+    """LLM interprets the statistical results in Chinese."""
     client = _get_llm()
     if not client:
         return {"error": "LLM not available"}
@@ -245,26 +245,17 @@ def interpret_results(idea: dict, exec_result: dict, chat_history: list) -> dict
 
 ## YOUR TASK NOW
 Interpret the statistical results following the SKILL.md output format.
-Provide a bilingual (Chinese + English) clinical interpretation.
+Provide a clinical interpretation in Chinese.
 
-Output format (Markdown, separated by ---):
+Output format (Markdown):
 ## 统计结论
-(Significant findings with exact p-values in Chinese)
-
-## Statistical Conclusions
-(Same in English)
+(Significant findings with exact p-values)
 
 ## 临床提示
-(Clinical implications in Chinese — suggestive only, no definitive claims)
-
-## Clinical Implications
-(Same in English)
+(Clinical implications — suggestive only, no definitive claims)
 
 ## 局限性
-(Limitations in Chinese)
-
-## Limitations
-(Same in English)
+(Limitations)
 """
 
     user = f"""## Research Idea

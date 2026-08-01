@@ -70,7 +70,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 .ideas-page { padding: 20px 24px; max-width: 1200px; margin: 0 auto; }
 .ideas-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .ideas-header h2 { font-size: 1.2rem; color: #0f4c81; }
-.ideas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 10px; }
+.ideas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .idea-card-lg { border: 1px solid #e0e5ec; border-radius: 8px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; background: #fff; }
 .idea-card-lg:hover { border-color: #0f4c81; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 .idea-card-lg.selected { border-color: #2ecc71; background: #f0fdf4; border-width: 2px; }
@@ -78,7 +78,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 .idea-card-lg .ic-title { font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
 .idea-card-lg .ic-title-en { color: #777; font-size: 0.76rem; margin-bottom: 6px; }
 .idea-card-lg .ic-hyp { color: #555; font-size: 0.78rem; margin-bottom: 4px; }
-.idea-card-lg .ic-meta { display: flex; gap: 16px; color: #999; font-size: 0.7rem; margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; }
+.idea-card-lg .ic-meta { display: flex; flex-direction: column; gap: 2px; color: #999; font-size: 0.72rem; margin-top: 6px; padding-top: 6px; border-top: 1px solid #eee; }
 .btn-primary { padding: 8px 20px; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 500; background: #0f4c81; color: #fff; }
 .btn-primary:hover { background: #0b3a63; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -115,6 +115,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 .msg.user .bubble { background: #e8f0f8; margin-left: auto; max-width: 80%; width: fit-content; }
 .msg.agent .bubble { background: #fff; border: 1px solid #e5e7eb; max-width: 85%; }
+.msg .bubble h1 { font-size: 1.1rem; margin: 8px 0 4px; color: #0f4c81; }
+.msg .bubble h2 { font-size: 1rem; margin: 8px 0 4px; }
+.msg .bubble h3 { font-size: 0.9rem; margin: 6px 0 3px; }
+.msg .bubble h4 { font-size: 0.85rem; margin: 4px 0 2px; }
+.msg .bubble p { margin: 0 0 6px; }
+.msg .bubble p:last-child { margin-bottom: 0; }
+.msg .bubble ul, .msg .bubble ol { padding-left: 20px; margin: 6px 0; }
+.msg .bubble li { margin-bottom: 2px; }
+.msg .bubble table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.8rem; }
+.msg .bubble th { background: #f4f6f8; font-weight: 600; text-align: left; padding: 6px 10px; border: 1px solid #e5e7eb; }
+.msg .bubble td { padding: 6px 10px; border: 1px solid #e5e7eb; }
+.msg .bubble tr:nth-child(even) td { background: #fafbfc; }
+.msg .bubble code { background: #f0f1f3; padding: 2px 5px; border-radius: 3px; font-size: 0.82em; font-family: "SF Mono", Menlo, Consolas, monospace; }
+.msg .bubble pre { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px 14px; overflow-x: auto; font-size: 0.78rem; margin: 8px 0; }
+.msg .bubble pre code { background: none; padding: 0; }
+.msg .bubble hr { border: none; border-top: 1px solid #e5e7eb; margin: 12px 0; }
+.msg .bubble strong { color: #1a1a1a; }
+.msg .bubble .err-msg { color: #dc2626; background: #fef2f2; padding: 6px 10px; border-radius: 6px; margin: 4px 0; }
+.msg .bubble .warn-msg { color: #92400e; background: #fffbeb; padding: 6px 10px; border-radius: 6px; margin: 4px 0; }
 .bubble { padding: 12px 16px; border-radius: 10px; font-size: 14px; line-height: 1.6; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
 .bubble.step { background: #f9fafb; border: 1px dashed #e5e7eb; font-size: 13px; color: #666; }
 .bubble.done { background: #ecfdf5; border-color: #a7f3d0; font-size: 13px; }
@@ -125,20 +144,46 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 .chat-bar button { padding: 10px 24px; border-radius: 8px; border: none; background: #0f4c81; color: #fff; font-weight: 600; cursor: pointer; }
 .chat-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.resizer { width: 6px; cursor: col-resize; flex-shrink: 0; }
-.resizer:hover { background: #0f4c81; }
+/* Tool execution card in chat */
+.tool-exec-card { margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 8px; background: #fafbfc; overflow: hidden; }
+.tool-exec-card.done { border-left: 3px solid #2ecc71; }
+.tool-exec-card.error { border-left: 3px solid #e74c3c; }
+.tool-exec-card.running { border-left: 3px solid #f39c12; }
+.tool-exec-card .tec-head { display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 0.8rem; font-weight: 500; border-bottom: 1px solid #eee; }
+.tool-exec-card .tec-body { padding: 8px 12px; font-size: 0.8rem; color: #555; }
+.tec-spin { width: 14px; height: 14px; border: 2px solid #e0e0e0; border-top-color: #f39c12; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; margin-left: auto; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.resizer { width: 8px; cursor: col-resize; flex-shrink: 0; background: #f0f2f5; position: relative; z-index: 5; }
+.resizer::after { content: ""; position: absolute; left: 3px; top: 50%; transform: translateY(-50%); width: 2px; height: 40px; border-radius: 1px; background: #d0d5dd; }
+.resizer:hover { background: #dde4f0; }
+.resizer:hover::after { background: #0f4c81; }
+/* Right Panel — Paginated Page Viewer */
 .panel-right { background: #fff; display: flex; flex-direction: column; overflow: hidden; border-left: 1px solid #e5e7eb; }
-.panel-right .tabs { display: flex; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; }
-.panel-right .tabs button { flex: 1; padding: 12px 4px; border: none; background: none; font-size: 11px; font-weight: 600; cursor: pointer; color: #888; border-bottom: 2px solid transparent; font-family: inherit; transition: all 0.2s; }
-.panel-right .tabs button:hover { color: #555; }
-.panel-right .tabs button.on { color: #0f4c81; border-bottom-color: #0f4c81; }
-.panel-right .r-content { flex: 1; overflow-y: auto; padding: 20px; font-size: 13px; line-height: 1.7; }
-.panel-right .r-content h2 { font-size: 16px; margin-bottom: 12px; }
-.panel-right .r-content h3 { font-size: 14px; margin: 16px 0 8px; }
-.panel-right .r-content table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
-.panel-right .r-content td, .panel-right .r-content th { padding: 6px 10px; border-bottom: 1px solid #f3f4f6; text-align: left; }
-.panel-right .r-content th { background: #f9fafb; font-weight: 700; font-size: 11px; color: #555; }
-.empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #aaa; font-size: 14px; }
+.panel-log-header { font-size: 0.8rem; font-weight: 600; padding: 10px 14px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
+.page-viewer { flex: 1; overflow-y: auto; padding: 16px; font-size: 0.8rem; line-height: 1.7; }
+.page-viewer h3 { font-size: 0.85rem; color: #0f4c81; margin: 12px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #eee; }
+.page-viewer h3:first-child { margin-top: 0; }
+.page-viewer table { width: 100%; border-collapse: collapse; font-size: 0.74rem; margin: 8px 0; }
+.page-viewer th { background: #f4f6f8; font-weight: 600; text-align: left; padding: 5px 8px; border: 1px solid #e5e7eb; }
+.page-viewer td { padding: 5px 8px; border: 1px solid #e5e7eb; }
+.page-viewer tr:nth-child(even) td { background: #fafbfc; }
+.page-viewer p { margin: 4px 0; }
+.page-viewer ul, .page-viewer ol { padding-left: 18px; margin: 4px 0; }
+.page-viewer li { margin-bottom: 2px; }
+.page-viewer code { background: #f0f1f3; padding: 1px 4px; border-radius: 3px; font-size: 0.85em; }
+.page-viewer pre { background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px; overflow-x: auto; font-size: 0.74rem; margin: 6px 0; }
+.page-viewer .sig { color: #059669; font-weight: 600; }
+.page-viewer .not-sig { color: #999; }
+.page-viewer details { margin: 8px 0; }
+.page-viewer details summary { cursor: pointer; font-size: 0.72rem; color: #888; }
+.page-viewer .page-meta { display: flex; gap: 12px; font-size: 0.7rem; color: #999; margin-bottom: 12px; }
+.page-nav { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 10px 14px; border-top: 1px solid #e5e7eb; flex-shrink: 0; }
+.page-nav button { padding: 5px 14px; border: 1px solid #d0d5dd; border-radius: 4px; background: #fff; cursor: pointer; font-size: 0.74rem; font-family: inherit; transition: all 0.1s; }
+.page-nav button:hover { border-color: #0f4c81; color: #0f4c81; }
+.page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-nav span { font-size: 0.74rem; color: #888; }
+.empty { display: flex; align-items: center; justify-content: center; height: 100%; color: #aaa; font-size: 13px; }
 
 .hint { text-align: center; margin: 12px 0; font-size: 13px; color: #555; padding: 10px; background: #e8f0f8; border-radius: 8px; }
 .btn-danger { background: #e74c3c; color: #fff; border: none; padding: 6px 14px; border-radius: 5px; font-size: 0.78rem; cursor: pointer; }
@@ -211,18 +256,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
           </h3>
           <div class="chat-area" id="chat"></div>
           <div class="chat-bar">
-            <input id="chat-input" placeholder="输入指令继续（如：提取队列、统计检验、生成报告）..." onkeydown="if(event.key==='Enter')send()">
+            <input id="chat-input" placeholder="输入你的研究问题或指令，Agent 会自主完成..." onkeydown="if(event.key==='Enter')send()">
             <button onclick="send()">发送</button>
           </div>
         </div>
         <div class="resizer" id="resizer"></div>
         <div class="panel-right" id="right-panel">
-          <div class="tabs">
-            <button class="on" data-r="cohort" onclick="switchTab('cohort')">队列</button>
-            <button data-r="stats" onclick="switchTab('stats')">统计</button>
-            <button data-r="manuscript" onclick="switchTab('manuscript')">报告</button>
+          <div class="panel-log-header">
+            <span>📋 研究日志</span>
+            <span id="page-indicator" style="font-size:0.7rem;color:#888;"></span>
           </div>
-          <div class="r-content" id="r-content"><div class="empty">报告将在此处展示</div></div>
+          <div class="page-viewer" id="page-viewer"><div class="empty">Agent 的行动和结果将在此处展示</div></div>
+          <div class="page-nav" id="page-nav" style="display:none;">
+            <button onclick="flipPage(-1)" id="btn-prev">← 上一页</button>
+            <span id="page-num"></span>
+            <button onclick="flipPage(1)" id="btn-next">下一页 →</button>
+          </div>
         </div>
       </div>
     </div>
@@ -245,7 +294,6 @@ function biVar(n) { if(BI_LAB[n]) return `${BI_LAB[n]} <span class="en-name">(${
 // Navigation
 // ============================================================
 let currentPage = "home";
-let currentTab = "cohort";
 let reports = {};
 let selectedIdeaId = null;
 let selectedIdeaData = null;
@@ -352,20 +400,16 @@ function buildEdaReportHtml(data) {
   // LLM quality narrative
   if (data.llm_analysis) {
     const la = data.llm_analysis;
-    const qn_cn = la.quality_narrative_cn || la.quality_narrative || "";
-    const qn_en = la.quality_narrative_en || "";
-    const rn_cn = la.relationship_notes_cn || la.relationship_notes || "";
-    const rn_en = la.relationship_notes_en || "";
-    if (qn_cn || qn_en) {
+    const qn = la.quality_narrative || la.quality_narrative_cn || "";
+    const rn = la.relationship_notes || la.relationship_notes_cn || "";
+    if (qn) {
       h += `<div class="dr-section"><h3>数据质量综合评估</h3>`;
-      if (qn_cn) h += `<div class="dr-narrative">${escHtml(qn_cn)}</div>`;
-      if (qn_en) h += `<div class="dr-narrative en">${escHtml(qn_en)}</div>`;
+      h += `<div class="dr-narrative">${escHtml(qn)}</div>`;
       h += `</div>`;
     }
-    if (rn_cn || rn_en) {
+    if (rn) {
       h += `<div class="dr-section"><h3>表关联解读</h3>`;
-      if (rn_cn) h += `<div class="dr-narrative">${escHtml(rn_cn)}</div>`;
-      if (rn_en) h += `<div class="dr-narrative en">${escHtml(rn_en)}</div>`;
+      h += `<div class="dr-narrative">${escHtml(rn)}</div>`;
       h += `</div>`;
     }
   }
@@ -382,6 +426,7 @@ async function autoLoadIdeasPage() {
     const r = await fetch("/api/ideas/pool");
     if (!r.ok) throw new Error("HTTP " + r.status);
     const data = await r.json();
+    reports.ideas = { ideas: data.ideas || [], count: data.count || 0 };
     renderIdeasGrid(data.ideas || []);
   } catch(e) {
     grid.innerHTML = `<div class="error-msg visible">加载失败: ${escHtml(e.message)}</div>`;
@@ -396,16 +441,12 @@ function renderIdeasGrid(ideas) {
   }
   grid.innerHTML = ideas.map((idea, i) => {
     const sel = idea.id === selectedIdeaId ? " selected" : "";
-    const title_cn = idea.title_cn || idea.title || "Untitled";
-    const title_en = idea.title_en || "";
-    const hyp_cn = idea.hypothesis_cn || idea.hypothesis || "";
-    const hyp_en = idea.hypothesis_en || "";
+    const title = idea.title || idea.title_cn || "Untitled";
+    const hyp = idea.hypothesis || idea.hypothesis_cn || "";
     return `<div class="idea-card-lg${sel}" onclick="selectIdeaOnPage('${idea.id}', this)" data-id="${idea.id}">
       <div class="ic-id">${idea.id} · #${i+1}</div>
-      <div class="ic-title">${escHtml(title_cn)}</div>
-      ${title_en ? `<div class="ic-title-en">${escHtml(title_en)}</div>` : ""}
-      <div class="ic-hyp">${escHtml(hyp_cn)}</div>
-      ${hyp_en ? `<div class="ic-hyp" style="color:#888;font-size:0.73rem;">${escHtml(hyp_en)}</div>` : ""}
+      <div class="ic-title">${escHtml(title)}</div>
+      <div class="ic-hyp">${escHtml(hyp)}</div>
       <div class="ic-meta">
         <span>评分: ${idea.total_score || "-"}</span>
         <span>方法: ${escHtml(idea.suggested_method || "-")}</span>
@@ -445,15 +486,26 @@ async function selectIdeaOnPage(id, el) {
 
 function goToWorkspace() {
   if (!selectedIdeaId) return;
-  if (!convId) newConversation(true);
+  // CRITICAL: capture pipeline data BEFORE newConversation wipes reports
+  const savedEda = reports.eda;
+  const savedIdeas = reports.ideas;
+  // Only create new conversation if none exists (preserves existing conv state)
+  if (!convId) {
+    newConversation(true);
+    // Restore pipeline data that newConversation wiped
+    if (savedEda) reports.eda = savedEda;
+    if (savedIdeas) reports.ideas = savedIdeas;
+  }
   goTo("workspace");
 
   const chat = document.getElementById("chat");
   if (!chat.querySelector(".msg")) {
-    const title = selectedIdeaData?.title_cn || selectedIdeaData?.title || selectedIdeaId;
-    chat.innerHTML += `<div class="msg agent"><div class="bubble">已选择选题: <strong>${escHtml(title)}</strong><br><br>输入指令继续下一步：<br>— <b>提取队列</b><br>— <b>统计检验</b><br>— <b>生成报告</b></div></div>`;
+    const title = selectedIdeaData?.title || selectedIdeaData?.title_cn || selectedIdeaId;
+    chat.innerHTML += `<div class="msg agent"><div class="bubble">已选择选题: <strong>${escHtml(title)}</strong><br><br>输入你的研究问题或指令，我会自主完成后续步骤。</div></div>`;
     chat.scrollTop = chat.scrollHeight;
   }
+  // Reset agent state so it re-seeds on first message
+  agentProjectId = "";
 }
 
 function exitWorkspace() {
@@ -483,12 +535,12 @@ function restoreLastConversation() {
   if (convs.length > 0) {
     const last = convs[0];
     convId = last.id;
-    reports = last.reports || {};
+    const savedR = last.reports || {};
+    reports = { ...savedR, eda: reports.eda || savedR.eda, ideas: reports.ideas || savedR.ideas };
     selectedIdeaId = last.selectedIdeaId || "";
     selectedIdeaData = last.selectedIdeaData || null;
     document.getElementById("chat").innerHTML = last.chatHtml || "";
     document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
-    renderReport();
     document.getElementById("status").textContent = "就绪";
   }
 }
@@ -498,7 +550,7 @@ function saveConversation() {
   let convs = loadConvs();
   let c = convs.find(x => x.id === convId);
   if (!c) { c = { id: convId }; convs.unshift(c); }
-  c.title = c.title || (selectedIdeaData?.title_cn || selectedIdeaData?.title || "新对话").substring(0, 20);
+  c.title = c.title || (selectedIdeaData?.title || selectedIdeaData?.title_cn || "新对话").substring(0, 20);
   c.reports = reports;
   c.chatHtml = document.getElementById("chat").innerHTML;
   c.selectedIdeaId = selectedIdeaId;
@@ -512,9 +564,9 @@ function newConversation(silent) {
   convId = "c" + Date.now();
   document.getElementById("chat").innerHTML = "";
   reports = {};
-  currentTab = "cohort";
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.r === "cohort"));
-  document.getElementById("r-content").innerHTML = '<div class="empty">报告将在此处展示</div>';
+  resultPages = []; activeResultPage = -1;
+  try { document.getElementById("page-viewer").innerHTML = '<div class="empty">Agent 的行动和结果将在此处展示</div>'; } catch(e) {}
+  try { document.getElementById("page-nav").style.display = "none"; } catch(e) {}
   document.getElementById("status").textContent = "就绪 — 新对话";
   if (!silent) renderConvList();
 }
@@ -541,14 +593,13 @@ function switchConversation(id) {
   let c = convs.find(x => x.id === id);
   if (!c) return;
   convId = c.id;
-  reports = c.reports || {};
+  // Merge saved reports with current pipeline data (don't lose EDA/ideas from pages 1-2)
+  const savedR = c.reports || {};
+  reports = { ...savedR, eda: reports.eda || savedR.eda, ideas: reports.ideas || savedR.ideas };
   selectedIdeaId = c.selectedIdeaId || "";
   selectedIdeaData = c.selectedIdeaData || null;
-  currentTab = "cohort";
   document.getElementById("chat").innerHTML = c.chatHtml || "";
   document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.r === "cohort"));
-  renderReport();
   renderConvList();
   document.getElementById("status").textContent = "就绪";
 }
@@ -589,48 +640,78 @@ async function regenerateIdeas() {
 }
 
 // ============================================================
-// Workspace — SSE Streaming Pipeline (Steps 3-5)
+// Workspace — Agent Chat
 // ============================================================
+let agentProjectId = "";
+let isAgentStreaming = false;
+let agentProjectSeeded = false;
+
+const TOOL_LABELS = {
+  scan_data: { icon: "📊", label: "扫描数据" },
+  generate_ideas: { icon: "💡", label: "生成选题" },
+  search_papers: { icon: "📄", label: "搜索论文" },
+  extract_cohort: { icon: "🔬", label: "提取队列" },
+  run_statistics: { icon: "📈", label: "统计检验" },
+  generate_report: { icon: "📝", label: "生成报告" },
+};
+
+async function seedProjectFromPipeline() {
+  if (!agentProjectId) return;
+  const seed = {};
+  if (reports.eda) seed.eda = reports.eda;
+  if (reports.ideas) {
+    seed.ideas = reports.ideas.ideas || reports.ideas.papers || [];
+  }
+  if (selectedIdeaId && selectedIdeaData) {
+    seed.selected_idea = selectedIdeaData;
+  }
+  if (Object.keys(seed).length > 0) {
+    await fetch(`/api/projects/${agentProjectId}/seed`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(seed),
+    });
+  }
+}
+
 async function send() {
+  if (isAgentStreaming) return;
   const inp = document.getElementById("chat-input");
   const msg = inp.value.trim();
   if (!msg) return;
   inp.value = "";
+  isAgentStreaming = true;
 
-  addMsg("user", msg);
-  document.getElementById("status").textContent = "分析中...";
+  addMsg("user", renderMd(msg));
+  document.getElementById("status").textContent = "Agent 思考中...";
 
-  let skill = "skill3";
-  const lower = msg.toLowerCase();
-  if (lower.includes("报告") || lower.includes("report") || lower.includes("manuscript")) skill = "skill5";
-  else if (lower.includes("检验") || lower.includes("stats") || lower.includes("统计")) skill = "skill4";
-  else if (lower.includes("队列") || lower.includes("cohort") || lower.includes("提取") || lower.includes("数据")) skill = "skill3";
-
-  await streamSkillSSE(skill);
-}
-
-function addMsg(role, text) {
-  const cls = role === "user" ? "user" : "agent";
-  document.getElementById("chat").innerHTML += `<div class="msg ${cls}"><div class="bubble">${text}</div></div>`;
-  document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
-}
-
-async function streamSkillSSE(skill) {
-  const streamId = "stream-" + Date.now();
-  document.getElementById("chat").innerHTML +=
-    `<div class="msg agent" id="${streamId}"><div class="bubble"><span class="spinner visible" style="display:inline-block;vertical-align:middle;margin-right:6px;"></span> 准备中...</div></div>`;
-  document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
+  // Create project on first message
+  if (!agentProjectId) {
+    const r = await fetch("/api/projects", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: (selectedIdeaData?.title || selectedIdeaData?.title_cn || "新研究").substring(0, 40) }),
+    });
+    const p = await r.json();
+    agentProjectId = p.project_id;
+  }
+  // Always re-seed before each message (defense against Redis state loss)
+  await seedProjectFromPipeline();
 
   try {
-    const resp = await fetch("/api/stream-pipeline", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ skill: skill })
+    // Build seed data (defense against state loss)
+    const _seed = {};
+    if (reports.eda) _seed.eda = reports.eda;
+    if (reports.ideas) _seed.ideas = reports.ideas.ideas || reports.ideas.papers || [];
+    if (selectedIdeaId && selectedIdeaData) _seed.selected_idea = selectedIdeaData;
+
+    const resp = await fetch("/api/agent/chat", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg, project_id: agentProjectId, _seed }),
     });
+    if (!resp.ok) { addMsg("agent", "❌ 请求失败 (" + resp.status + ")"); return; }
 
     const reader = resp.body.getReader();
     const dec = new TextDecoder();
-    let buf = "", html = "";
+    let buf = "", agentHtml = "", toolCardId = null;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -640,102 +721,320 @@ async function streamSkillSSE(skill) {
       buf = lines.pop() || "";
 
       for (const line of lines) {
-        if (!line.startsWith("data: ")) continue;
+        const t = line.trim();
+        if (!t.startsWith("data: ")) continue;
         try {
-          const d = JSON.parse(line.slice(6));
-          if (d.event === "skill_start") {
-            html += `<div class="label">${d.message}</div>`;
-          } else if (d.event === "step") {
-            html += `<div class="bubble step"><span class="spinner visible" style="display:inline-block;vertical-align:middle;margin-right:6px;"></span> ${d.message}</div>`;
-          } else if (d.event === "skill_complete") {
-            html = html.replace(/<span class="spinner visible".*?><\/span>/g, "✅");
-            html += `<div class="bubble done">✅ ${d.message}</div>`;
-            if (d.skill === "skill1" && d.data) reports.eda = d.data;
-            if (d.skill === "skill2" && d.data) reports.ideas = d.data;
-            if (d.skill === "skill3" && d.data) reports.cohort = d.data;
-            if (d.skill === "skill4" && d.data) reports.stats = d.data;
-            if (d.skill === "skill5") reports.manuscript = d.data?.manuscript || "";
-            renderReport();
-          } else if (d.event === "pipeline_complete") {
-            html = html.replace(/<span class="spinner visible".*?><\/span>/g, "✅");
-            html += `<div class="bubble done">${d.message}</div>`;
-          } else if (d.event === "error") {
-            html += `<div class="bubble" style="background:#fef2f2;border-color:#fecaca;">❌ ${d.message}</div>`;
+          const ev = JSON.parse(t.slice(6));
+          if (ev.event === "tool_call") {
+            const tl = TOOL_LABELS[ev.tool] || { icon: "⚙️", label: ev.tool };
+            toolCardId = "tc-" + Date.now();
+            appendToolCard(toolCardId, `${tl.icon} ${tl.label}`, "running");
+          } else if (ev.event === "tool_result") {
+            if (toolCardId) {
+              const tl = TOOL_LABELS[ev.tool] || { icon: "⚙️", label: ev.tool };
+              const err = ev.result.status === "error" || !!ev.result.error;
+              updateToolCard(toolCardId, `${tl.icon} ${tl.label}`, ev.result, err);
+              toolCardId = null;
+            }
+            // Update reports for right panel
+            updateReportsFromTool(ev.tool, ev.result);
+          } else if (ev.event === "token") {
+            if (toolCardId) { finalizeToolCard(toolCardId); toolCardId = null; }
+            agentHtml += ev.text;
+            upsertAgentMsg(renderMd(agentHtml));
+          } else if (ev.event === "error") {
+            if (toolCardId) { finalizeToolCard(toolCardId); toolCardId = null; }
+            agentHtml += `<div class="err-msg">❌ ${escHtml(ev.message)}</div>`;
+            upsertAgentMsg(agentHtml);
+          } else if (ev.event === "warning") {
+            agentHtml += `<div class="warn-msg">⚠️ ${escHtml(ev.message)}</div>`;
+            upsertAgentMsg(renderMd(agentHtml));
           }
-        } catch(e) {}
+        } catch (e) {}
       }
-      updateStreamMsg(streamId, html || '<span class="spinner visible" style="display:inline-block;vertical-align:middle;margin-right:6px;"></span> 处理中...');
     }
-    updateStreamMsg(streamId, html || "✅ 完成");
+
+    if (toolCardId) { finalizeToolCard(toolCardId); }
+    if (!agentHtml) addMsg("agent", "✅ 完成");
+  } catch (e) {
+    addMsg("agent", "❌ 连接失败: " + e.message);
+  } finally {
+    isAgentStreaming = false;
     document.getElementById("status").textContent = "就绪";
-    showHint();
-  } catch(e) {
-    updateStreamMsg(streamId, "❌ 连接失败: " + e.message);
-    document.getElementById("status").textContent = "错误";
+    document.getElementById("chat-input").focus();
   }
 }
 
-function updateStreamMsg(id, html) {
-  const el = document.getElementById(id);
-  if (el) { el.querySelector(".bubble").innerHTML = html; }
+function addMsg(role, html) {
+  const cls = role === "user" ? "user" : "agent";
+  document.getElementById("chat").innerHTML += `<div class="msg ${cls}"><div class="bubble">${html}</div></div>`;
   document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 }
 
-function showHint() {
-  let h = "";
-  if (reports.eda && !reports.cohort) h = "💡 EDA 完成。输入 <b>提取队列</b> 继续。";
-  else if (reports.cohort && !reports.stats) h = "💡 队列就绪。输入 <b>统计检验</b> 继续。";
-  else if (reports.stats && !reports.manuscript) h = "💡 统计完成。输入 <b>生成报告</b> 继续。";
-  else if (reports.manuscript) h = "🎉 全流程完成！查看右侧报告面板。";
-  if (h) document.getElementById("chat").innerHTML += `<div class="hint">${h}</div>`;
+function upsertAgentMsg(html) {
+  const chat = document.getElementById("chat");
+  const last = chat.lastElementChild;
+  if (last && last.classList.contains("agent") && last.id === "agent-streaming") {
+    last.querySelector(".bubble").innerHTML = html;
+  } else {
+    chat.innerHTML += `<div class="msg agent" id="agent-streaming"><div class="bubble">${html}</div></div>`;
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function appendToolCard(id, label, cls) {
+  document.getElementById("chat").innerHTML +=
+    `<div class="tool-exec-card ${cls}" id="${id}"><div class="tec-head"><span>${label}</span><span class="tec-spin"></span></div></div>`;
   document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 }
 
-// ============================================================
-// Right Panel — Report Tabs
-// ============================================================
-function switchTab(r) {
-  currentTab = r;
-  document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("on", b.dataset.r === r));
-  renderReport();
+function updateToolCard(id, label, result, isErr) {
+  const card = document.getElementById(id);
+  if (!card) return;
+  const summary = formatToolResult(result);
+  card.className = "tool-exec-card " + (isErr ? "error" : "done");
+  card.innerHTML = `<div class="tec-head"><span>${label}</span><span>${isErr ? "❌" : "✓"}</span></div><div class="tec-body">${summary}</div>`;
+  document.getElementById("chat").scrollTop = document.getElementById("chat").scrollHeight;
 }
 
-function renderReport() {
-  const el = document.getElementById("r-content");
-  const d = reports[currentTab];
-  if (!d) { el.innerHTML = '<div class="empty">尚未生成</div>'; return; }
+function finalizeToolCard(id) {
+  const card = document.getElementById(id);
+  if (card && card.classList.contains("running")) {
+    card.classList.remove("running");
+    card.classList.add("done");
+    const spin = card.querySelector(".tec-spin");
+    if (spin) spin.outerHTML = "✓";
+  }
+}
 
-  if (currentTab === "cohort") {
-    let h = `<h2>📦 研究队列</h2>`;
-    h += `<p><strong>研究:</strong> ${escHtml(d.idea_title||"N/A")}</p>`;
-    h += `<p><strong>最终队列:</strong> ${(d.final_cohort_size||0).toLocaleString()} 名患者 | <strong>变量数:</strong> ${d.n_columns||0}</p>`;
-    if (d.variables_included?.length) h += `<p><strong>已提取变量:</strong> ${d.variables_included.join(", ")}</p>`;
-    if (d.variables_not_found?.length) h += `<p style="color:#e74c3c;"><strong>未找到:</strong> ${d.variables_not_found.join(", ")}</p>`;
-    if (d.warnings?.length) d.warnings.forEach(w => h += `<p style="color:#f39c12;">⚠ ${escHtml(w)}</p>`);
-    if (d.funnel?.steps?.length) {
-      h += `<h3>筛选漏斗</h3><table><tr><th>步骤</th><th>患者数</th></tr>`;
-      d.funnel.steps.forEach(s => h += `<tr><td>${escHtml(s.description||"")}</td><td>${(s.count||0).toLocaleString()}</td></tr>`);
-      h += `</table>`;
+function formatToolResult(result) {
+  if (result.error) return `<span style="color:var(--danger)">${escHtml(result.error)}</span>`;
+  if (result.summary) return `发现 <b>${result.summary.tables_found||"?"}</b> 张表，约 <b>${result.summary.total_patients_estimate||"?"}</b> 名患者`;
+  if (result.count !== undefined) return `生成了 <b>${result.count}</b> 个候选`;
+  if (result.final_cohort_size !== undefined) return `队列规模: <b>${result.final_cohort_size}</b> 患者`;
+  if (result.significant_count !== undefined) return `N=<b>${result.sample_size||"?"}</b>，<b>${result.significant_count}</b> 项显著`;
+  if (result.manuscript_length) return `报告完成，<b>${result.manuscript_length}</b> 字符`;
+  return "完成";
+}
+
+function updateReportsFromTool(tool, result) {
+  // Append action card to unified log (right panel)
+  appendToActionLog(tool, result);
+  // Also persist in reports for seed/state
+  if (tool === "scan_data" && result.full_result) reports.eda = result.full_result;
+  else if (tool === "generate_ideas") reports.ideas = result;
+  else if (tool === "extract_cohort") reports.cohort = result;
+  else if (tool === "run_statistics") reports.stats = result;
+  else if (tool === "generate_report" && result.manuscript) reports.manuscript = result.manuscript;
+}
+
+// Markdown to HTML renderer (handles tables, lists, headers, code, etc.)
+function renderMd(text) {
+  if (!text) return "";
+  let html = text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // Code blocks (must be before inline code)
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>");
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // Bold and italic
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, "<strong><em>$1</em></strong>");
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  html = html.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  // Headers
+  html = html.replace(/^#### (.+)$/gm, "<h4>$1</h4>");
+  html = html.replace(/^### (.+)$/gm, "<h3>$1</h3>");
+  html = html.replace(/^## (.+)$/gm, "<h2>$1</h2>");
+  html = html.replace(/^# (.+)$/gm, "<h1>$1</h1>");
+  // Horizontal rules
+  html = html.replace(/^---$/gm, "<hr>");
+  // Unordered lists
+  html = html.replace(/^[\*\-] (.+)$/gm, "<li>$1</li>");
+  html = html.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+  // Ordered lists
+  html = html.replace(/^\d+\. (.+)$/gm, "<li>$1</li>");
+  // Table rows
+  html = html.replace(/^\|(.+)\|$/gm, (match) => {
+    const cells = match.split("|").filter(c => c.trim() !== "");
+    if (cells.every(c => /^[\s\-:]+$/.test(c))) return ""; // skip separator rows
+    const isHeader = cells.some(c => false); // simplified
+    return "<tr>" + cells.map(c => `<td>${c.trim()}</td>`).join("") + "</tr>";
+  });
+  // Wrap consecutive <tr>s in <table>
+  html = html.replace(/(<tr>[\s\S]*?<\/tr>)+/g, "<table>$&</table>");
+  // Wrap consecutive <li>s in <ul>
+  html = html.replace(/(<li>[\s\S]*?<\/li>)+/g, (match) => {
+    if (match.includes("<ul>")) return match;
+    return "<ul>" + match + "</ul>";
+  });
+  // Paragraphs and line breaks
+  html = html.replace(/\n\n/g, "</p><p>");
+  html = html.replace(/\n/g, "<br>");
+  // Wrap in paragraph if not already wrapped by a block element
+  if (!html.match(/^<(h[1-4]|table|ul|ol|pre|hr|p|div)/)) {
+    html = "<p>" + html + "</p>";
+  }
+  // Clean up empty paragraphs
+  html = html.replace(/<p><\/p>/g, "");
+  html = html.replace(/<p>(<(h[1-4]|table|ul|ol|pre|hr|div))/g, "$1");
+  html = html.replace(/(<\/(h[1-4]|table|ul|ol|pre|hr|div)>)<\/p>/g, "$1");
+
+  return html;
+}
+
+// ============================================================
+// Right Panel — Paginated Results Viewer
+// ============================================================
+let resultPages = [];  // [{tool, label, icon, time, html}]
+let activeResultPage = -1;
+
+function appendToActionLog(tool, result) {
+  const tl = TOOL_LABELS[tool] || { icon: "⚙️", label: tool };
+  const time = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+  const isErr = result.status === "error" || !!result.error;
+
+  let body;
+  if (isErr) {
+    body = `<p style="color:#e74c3c;">❌ ${escHtml(result.error || "未知错误")}</p>`;
+  } else {
+    body = formatPageBody(tool, result);
+  }
+
+  const page = {
+    tool, icon: tl.icon, label: tl.label, time,
+    html: `<div class="page-meta"><span>${tl.icon} ${tl.label}</span><span>${time}</span></div>${body}`,
+  };
+  resultPages.push(page);
+  activeResultPage = resultPages.length - 1;
+  renderCurrentPage();
+}
+
+function renderCurrentPage() {
+  const viewer = document.getElementById("page-viewer");
+  const nav = document.getElementById("page-nav");
+  const num = document.getElementById("page-num");
+  const indicator = document.getElementById("page-indicator");
+  const btnPrev = document.getElementById("btn-prev");
+  const btnNext = document.getElementById("btn-next");
+
+  if (resultPages.length === 0) {
+    viewer.innerHTML = '<div class="empty">Agent 的行动和结果将在此处展示</div>';
+    nav.style.display = "none";
+    indicator.textContent = "";
+    return;
+  }
+
+  const page = resultPages[activeResultPage];
+  viewer.innerHTML = page.html;
+  viewer.scrollTop = 0;
+
+  nav.style.display = "flex";
+  num.textContent = `${activeResultPage + 1} / ${resultPages.length}`;
+  indicator.textContent = `${activeResultPage + 1}/${resultPages.length}`;
+  btnPrev.disabled = activeResultPage <= 0;
+  btnNext.disabled = activeResultPage >= resultPages.length - 1;
+}
+
+function flipPage(dir) {
+  const newPage = activeResultPage + dir;
+  if (newPage >= 0 && newPage < resultPages.length) {
+    activeResultPage = newPage;
+    renderCurrentPage();
+  }
+}
+
+function formatPageBody(tool, result) {
+  switch (tool) {
+    case "scan_data": {
+      const s = result.summary || result;
+      const tables = s.table_names || [];
+      const sizes = s.table_sizes || {};
+      let h = `<h3>📊 数据扫描结果</h3>`;
+      h += `<p>发现 <b>${s.tables_found||"?"}</b> 张数据表，约 <b>${(s.total_patients_estimate||0).toLocaleString()}</b> 名患者</p>`;
+      if (tables.length) {
+        h += `<table><tr><th>表名</th><th>大小</th></tr>`;
+        tables.forEach(t => { h += `<tr><td>${escHtml(t)}</td><td>${sizes[t]||"-"} MB</td></tr>`; });
+        h += `</table>`;
+      }
+      const qs = s.quality_summary || {};
+      if (qs.usable_variables) h += `<p>✅ <b>${qs.usable_variables}</b> 个变量可用，${qs.cautious_variables||0} 个需注意</p>`;
+      const rels = s.relationships || [];
+      if (rels.length) {
+        h += `<h3>表关联关系</h3>`;
+        rels.slice(0, 10).forEach(r => { h += `<p>• ${escHtml(r.left)} ↔ ${escHtml(r.right)}</p>`; });
+      }
+      return h;
     }
-    el.innerHTML = h;
-  } else if (currentTab === "stats") {
-    const results = d.results || [];
-    let h = `<h2>📈 统计检验报告</h2>`;
-    h += `<p><strong>样本量:</strong> ${(d.sample_size||0).toLocaleString()} | <strong>检验项:</strong> ${results.length}</p>`;
-    h += '<table><tr><th>分析项</th><th>方法</th><th>N</th><th>p值</th><th>显著性</th></tr>';
-    results.forEach(r => {
-      const sigTag = r.significant ? '<span style="color:#e74c3c;font-weight:700">● 显著</span>' : '<span style="color:#aaa">○</span>';
-      h += `<tr><td><strong>${escHtml(r.label||"?")}</strong></td><td>${escHtml((r.method||"").substring(0,25))}</td><td>${r.n||"-"}</td><td>p=${r.p_value||"N/A"}</td><td>${sigTag}</td></tr>`;
-    });
-    h += '</table>';
-    if (d.interpretation) h += `<h3>📋 结果解读</h3><div style="white-space:pre-wrap;line-height:1.8">${d.interpretation}</div>`;
-    el.innerHTML = h;
-  } else if (currentTab === "manuscript") {
-    const md = typeof d === "string" ? d : (d.manuscript || "");
-    const html = md.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-      .replace(/^### (.+)$/gm,"<h3>$1</h3>").replace(/^## (.+)$/gm,"<h2>$1</h2>").replace(/^# (.+)$/gm,"<h1>$1</h1>")
-      .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n\n/g,"<br><br>");
-    el.innerHTML = `<h2>📄 研究报告</h2><div style="white-space:pre-wrap;line-height:1.8">${html}</div>`;
+    case "generate_ideas": {
+      let h = `<h3>💡 研究选题</h3>`;
+      h += `<p>共生成 <b>${result.count||0}</b> 个候选选题</p>`;
+      if (result.ideas?.length) {
+        h += `<table><tr><th>ID</th><th>标题</th><th>方法</th><th>评分</th></tr>`;
+        result.ideas.forEach(i => {
+          h += `<tr><td>${i.id}</td><td><strong>${escHtml((i.title||i.title_cn||"").substring(0,50))}</strong></td><td>${escHtml((i.suggested_method||"").substring(0,20))}</td><td>${i.total_score||"-"}</td></tr>`;
+        });
+        h += `</table>`;
+      }
+      return h;
+    }
+    case "extract_cohort": {
+      let h = `<h3>🔬 队列提取结果</h3>`;
+      h += `<p>队列规模: <b>${(result.final_cohort_size||0).toLocaleString()}</b> 名患者</p>`;
+      if (result.variables_included?.length) {
+        h += `<p><strong>已提取变量 (${result.variables_included.length}):</strong> ${result.variables_included.join(", ")}</p>`;
+      }
+      if (result.variables_not_found?.length) {
+        h += `<p style="color:#e74c3c;"><strong>未找到:</strong> ${result.variables_not_found.join(", ")}</p>`;
+      }
+      if (result.warnings?.length) {
+        h += `<p style="color:#f39c12;">⚠ ${result.warnings.join("; ")}</p>`;
+      }
+      if (result.steps?.length) {
+        h += `<h3>筛选漏斗</h3><table><tr><th>步骤</th><th>患者数</th></tr>`;
+        result.steps.forEach(s => { h += `<tr><td>${escHtml(s.description||"")}</td><td>${(s.count||0).toLocaleString()}</td></tr>`; });
+        h += `</table>`;
+      }
+      return h;
+    }
+    case "run_statistics": {
+      let h = `<h3>📈 统计检验结果</h3>`;
+      h += `<p>样本量 N=<b>${(result.sample_size||0).toLocaleString()}</b>，共 <b>${(result.results||[]).length}</b> 项检验，<b>${result.significant_count||0}</b> 项显著</p>`;
+      if (result.results?.length) {
+        h += `<table><tr><th>检验项</th><th>方法</th><th>N</th><th>p值</th><th>效应量</th><th>显著性</th></tr>`;
+        result.results.forEach(r => {
+          const pval = r.p_value === 0 ? '&lt;0.001' : (r.p_value || "N/A");
+          const eff = r.odds_ratio ? `OR=${r.odds_ratio}` : (r.statistic ? `U=${r.statistic}` : "-");
+          h += `<tr>
+            <td><strong>${escHtml(r.label||r.test_id||"?")}</strong></td>
+            <td style="font-size:0.7rem;">${escHtml((r.method||"").substring(0,35))}</td>
+            <td>${(r.n||"-").toLocaleString()}</td>
+            <td>p=${pval}</td>
+            <td>${eff}</td>
+            <td>${r.significant?'<span class="sig">● 显著</span>':'<span class="not-sig">○</span>'}</td>
+          </tr>`;
+        });
+        h += `</table>`;
+      }
+      if (result.execution_log?.length) {
+        h += `<details><summary>执行日志</summary><div style="font-size:0.7rem;color:#888;padding:4px 0;">`;
+        result.execution_log.forEach(l => { h += `<div>${escHtml(l)}</div>`; });
+        h += `</div></details>`;
+      }
+      if (result.interpretation) {
+        h += `<h3>📋 临床解读</h3><div>${renderMd(result.interpretation)}</div>`;
+      }
+      return h;
+    }
+    case "generate_report": {
+      let h = `<h3>📝 研究报告</h3>`;
+      h += `<p>报告长度: <b>${(result.manuscript_length||0).toLocaleString()}</b> 字符</p>`;
+      if (result.manuscript) {
+        h += `<div style="line-height:1.7;">${renderMd(result.manuscript)}</div>`;
+      }
+      return h;
+    }
+    default: return `<p>完成</p>`;
   }
 }
 

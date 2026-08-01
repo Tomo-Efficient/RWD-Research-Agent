@@ -191,7 +191,7 @@ class SkillCohort:
             "output_file": str(output_path),
         }
 
-        idea_title = idea.get("title") or idea.get("title_en") or idea.get("title_cn") or ""
+        idea_title = idea.get("title") or idea.get("title_cn") or ""
         return _sanitize({
             "skill": "skill3", "status": "completed",
             "idea_id": idea_id, "idea_title": idea_title,
@@ -283,13 +283,11 @@ Return ONLY valid JSON, no markdown:
 {
   "variable_assessments": {"table.column": "assessment text"},
   "key_clinical_variables": [{"variable": "name", "importance": "high/medium/low", "reason": "..."}],
-  "quality_narrative_cn": "数据质量综合评估（中文）",
-  "quality_narrative_en": "Overall data quality narrative (English)",
-  "relationship_notes_cn": "表关联关系解读（中文）",
-  "relationship_notes_en": "Table relationship interpretation (English)"
+  "quality_narrative": "数据质量综合评估",
+  "relationship_notes": "表关联关系解读"
 }
 
-IMPORTANT: All *_cn fields MUST be written in Chinese. All *_en fields MUST be written in English."""
+IMPORTANT: All text fields MUST be written in Chinese."""
 
 
 class Skill1EDA:
@@ -519,7 +517,7 @@ class Skill1EDA:
 SKILL4_LLM_PROMPT = """You are a medical statistical testing assistant following the medical-stats-test SKILL.md.
 
 ## Task
-Given statistical test results below, write a clinical interpretation in Markdown format.
+Given statistical test results below, write a clinical interpretation in Chinese (Markdown format).
 
 ## Guidelines (from SKILL.md)
 - Distinguish "statistical conclusion" from "clinical implications" clearly
@@ -528,17 +526,13 @@ Given statistical test results below, write a clinical interpretation in Markdow
 - Note limitations: exploratory analysis, need adjusted models
 - Statistical significance ≠ clinical significance
 
-## Output Format (BILINGUAL)
-Write TWO versions separated by a "---" divider line:
-1. Chinese version first (中文版)
-2. English version after the divider (English version)
-
-Both versions follow the same structure:
-- ## Statistical Conclusions / 统计结论
+## Output Format
+Write in Chinese following this structure:
+- ## 统计结论
 - Key significant findings with exact p-values
-- ## Clinical Implications / 临床提示
+- ## 临床提示
 - Bullet points suggesting possible clinical relevance
-- ## Limitations / 局限性
+- ## 局限性
 - Key caveats of this analysis
 
 Write directly in Markdown. Do NOT output JSON."""
