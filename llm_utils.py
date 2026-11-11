@@ -133,7 +133,7 @@ Follow the skill workflow EXACTLY as specified in the system prompt:
 2. Formulate PICO/PECO frameworks
 3. Generate PubMed queries (note: live search not available)
 4. Build evidence gap assessment based on general sepsis research knowledge
-5. Generate and score 50 candidate research ideas
+5. Generate and score 10 candidate research ideas (compact JSON; do not pad to 50)
 
 Dataset: sepsis ICU patients from MIMIC-IV, first 24h window.
 Available domains: demographics, 38 lab biomarkers, vital signs, medications, outcomes.
@@ -166,9 +166,10 @@ Return ONLY valid JSON with the exact structure specified in the skill document.
 
     if text:
         result = _parse_llm_json(text, mode)
-        if "error" not in result:
+        if "error" not in result and result.get("ideas"):
             result["skill_doc_loaded"] = len(_SKILL2.skill_md) > 0
             return result
+        print("[Skill2] LLM returned no ideas; falling back to template ideas.")
 
     print("DeepSeek unavailable. Using template ideas.")
     return _generate_template_ideas(eda_report, mode)
