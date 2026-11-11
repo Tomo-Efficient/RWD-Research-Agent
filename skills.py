@@ -11,6 +11,7 @@ Architecture:
 """
 
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -216,9 +217,14 @@ class SkillCohort:
         pico = idea.get("pico", {})
         for key in ["I", "O"]:
             val = pico.get(key, "")
-            if val and len(val) > 2:
-                # Add as potential variable
-                needed_vars.add(val)
+            if not val or len(val) <= 2:
+                continue
+            # PICO 值常写成「中文标签（anchor_age）」；只取括号内的原始字段名
+            m = re.search(r"[（(]([A-Za-z_][A-Za-z0-9_]*)[)）]", str(val))
+            if m:
+                needed_vars.add(m.group(1))
+            elif re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", str(val)):
+                needed_vars.add(str(val))
 
         # Default: always include key demographics and outcome
         needed_vars.add("gender")

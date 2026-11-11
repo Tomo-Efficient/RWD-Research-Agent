@@ -140,6 +140,20 @@ def api_run_skill2():
         return jsonify({"error": str(e), "skill": "skill2"}), 500
 
 
+@app.route("/api/skill2/status")
+def api_skill2_status():
+    """Return the current session's Skill 2 output (ideas or papers)."""
+    sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    out = s.skill2_output or {}
+    return jsonify({
+        "status": out.get("status", "not_run"),
+        "mode": out.get("mode"),
+        "ideas": out.get("ideas", []),
+        "papers": out.get("papers", []),
+    })
+
+
 @app.route("/api/skill2/select-idea", methods=["POST"])
 def api_select_idea():
     """Select a specific research idea or paper."""
@@ -169,6 +183,42 @@ def api_ideas_pool():
     """Get the cached ideas pool."""
     ideas = get_ideas_pool()
     return jsonify({"ideas": ideas, "count": len(ideas)})
+
+
+@app.route("/api/ideas/selected")
+def api_selected_idea():
+    """Return the currently selected idea for the session."""
+    sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    return jsonify({"idea": s.selected_idea, "selected_id": s.selected_idea_id})
+
+
+@app.route("/api/ideas/update", methods=["POST"])
+def api_update_idea():
+    """Update editable protocol fields of the selected idea."""
+    sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    if not s.selected_idea:
+        return jsonify({"error": "No idea selected"}), 400
+
+    data = request.json if request.is_json else {}
+    allowed_text = ["title", "research_question", "hypothesis", "suggested_method"]
+    for key in allowed_text:
+        if key in data and isinstance(data[key], str):
+            s.selected_idea[key] = data[key].strip()
+
+    pico = data.get("pico")
+    if isinstance(pico, dict):
+        current = s.selected_idea.get("pico") or {}
+        for key in ["P", "I", "C", "O"]:
+            if key in pico and isinstance(pico[key], str):
+                current[key] = pico[key].strip()
+        s.selected_idea["pico"] = current
+
+    if "notes" in data and isinstance(data["notes"], str):
+        s.selected_idea["protocol_notes"] = data["notes"].strip()
+
+    return jsonify({"status": "updated", "idea": s.selected_idea})
 
 
 @app.route("/api/skill2/submit-idea", methods=["POST"])
@@ -212,6 +262,8 @@ def api_submit_idea():
 def api_run_skill3():
     """Run cohort extraction for the selected idea."""
     sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    s.data_dir = s.data_dir or DATA_DIR
 
     try:
         output = orchestrator.run_skill3(sid)
@@ -237,6 +289,8 @@ def api_skill3_status():
 def api_run_skill4():
     """Run Skill 4: Statistical testing for selected idea."""
     sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    s.data_dir = s.data_dir or DATA_DIR
 
     try:
         output = orchestrator.run_skill4(sid)
@@ -261,6 +315,8 @@ def api_skill4_status():
 def api_run_skill5():
     """Run Skill 5: Generate the final manuscript."""
     sid = _get_session_id()
+    s = orchestrator.get_session(sid)
+    s.data_dir = s.data_dir or DATA_DIR
 
     try:
         manuscript = orchestrator.run_skill5(sid)
@@ -303,6 +359,7 @@ def api_stream_pipeline():
 
         try:
             skill = target_skill
+            s.data_dir = s.data_dir or DATA_DIR
 
             # === Skill 1 ===
             if skill == "skill1":
