@@ -308,65 +308,33 @@
     const saved = state.selected ? state.selected : null;
     const savedLabel = saved ? (saved.title || saved.title_cn || '上次的研究方案') : '';
     app.innerHTML = `
-      <section class="hero">
-        <div class="hero-in">
-          <div>
-            <div class="kicker">RWD Research Agent · 临床研究智能体</div>
-            <h1>从一个临床问题，<em>到可复现的研究报告。</em></h1>
-            <p class="hero-lead">面向真实世界数据（RWD）的研究工作台。先确认数据能回答什么，再选方向、定方案、跑分析，最后得到带方法、质控和可追溯变量的 IMRAD 报告。</p>
-            <div class="hero-actions">
-              <button class="btn btn-primary btn-lg" id="start-flow">用示例数据开始 <span class="arw">→</span></button>
-              <a class="btn btn-lg" href="#sample">查看示例产出</a>
-            </div>
-            <div class="hero-note"><span>MIMIC-IV 脓毒症 ICU 队列</span><span>全程可追溯</span><span>不写代码</span></div>
-            <div class="hero-stats">
-              <div class="hero-stat"><b>12,216</b><span>ICU 患者</span></div>
-              <div class="hero-stat"><b>33</b><span>可用变量</span></div>
-              <div class="hero-stat"><b>8</b><span>张数据表</span></div>
-              <div class="hero-stat"><b>5</b><span>段可追溯流程</span></div>
-            </div>
-            ${saved ? `<div class="resume"><div><b>继续上次：${esc(savedLabel)}</b><p>已保存方案与阶段结果，可从上次位置接着做。</p></div><button class="btn btn-sm" id="resume-flow">继续 →</button></div>` : ''}
-          </div>
-          <div class="artifact" id="sample">
-            <div class="artifact-top"><span>示例产出 / sample output</span><span>research draft</span></div>
-            <h3>乳酸清除率与脓毒症患者住院死亡</h3>
-            <div class="q">示例研究问题：24 小时内乳酸清除率是否与住院死亡相关？</div>
-            <ul>
-              <li><b>研究队列</b><span>cohort</span></li>
-              <li><b>Table 1 基线特征</b><span>table 1</span></li>
-              <li><b>组间比较 + 回归</b><span>statistics</span></li>
-              <li><b>IMRAD 报告草稿</b><span>manuscript</span></li>
-            </ul>
-            <div class="artifact-foot"><span>结构示例，非真实研究结论</span><span>4 artifacts</span></div>
-          </div>
-        </div>
-      </section>
-      <section class="section-home">
+      <section class="workspace">
         <div class="wrap">
-          <div class="home-head"><div class="kicker">工作流 / how it works</div><h2>把研究拆成五个可检查的步骤。</h2><p>每一步都有明确的输入与产出；没确认上一步，不会把你丢进空白聊天框。</p></div>
-          <div class="flow-grid">
-            ${[
-              ['01','确认数据','看数据能回答什么、不能回答什么。'],
-              ['02','选择方向','从候选方向里看 PICO、变量与方法。'],
-              ['03','确认方案','人群、暴露、对照、结局，先对齐再跑。'],
-              ['04','运行分析','队列、统计、报告分阶段执行。'],
-              ['05','结果与报告','结论、质控、局限和可下载报告。'],
-            ].map(([n,t,d]) => `<div class="flow-card"><div class="num">${n}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}
+          <div class="ws-head">
+            <div>
+              <div class="kicker">RWD Research Agent</div>
+              <h1>研究项目</h1>
+              <p>真实世界数据 · 从选题到 IMRAD 报告</p>
+            </div>
+            <button class="btn btn-primary" id="start-flow">新建研究 <span class="arw">→</span></button>
           </div>
-        </div>
-      </section>
-      <section class="section-home alt">
-        <div class="wrap">
-          <div class="home-head"><div class="kicker">设计原则 / principles</div><h2>不是一个更长的聊天框。</h2><p>临床研究需要的是可复核的判断，而不是一段看起来合理的文字。</p></div>
-          <div class="why-grid">
-            <div class="why"><b>先给判断，再给细节</b><p>首页先让你看到产出结构；数据页先讲能回答什么，技术细节折叠在后面。</p></div>
-            <div class="why"><b>每一步都能回头改</b><p>方向、PICO、方法在运行前都能确认；运行后保留参数和中间产物。</p></div>
-            <div class="why"><b>结果带质控和局限</b><p>样本量、缺失变量、统计假设、探索性结论都写在结果里，不藏在脚注。</p></div>
+          <div class="project-table">
+            <div class="project-row">
+              <div class="pr-main">
+                <div class="pr-name">脓毒症 ICU 队列 <span class="tag">内置数据</span></div>
+                <div class="pr-meta">MIMIC-IV · 12,216 患者 · 33 个可用变量</div>
+              </div>
+              <button class="btn btn-sm" id="start-flow-2">打开</button>
+            </div>
+            ${saved ? `<div class="project-row">
+              <div class="pr-main">
+                <div class="pr-name">${esc(savedLabel)}</div>
+                <div class="pr-meta">已保存方案 · ${esc((saved.pico || {}).I || '待定暴露')}</div>
+              </div>
+              <button class="btn btn-sm" id="resume-flow">继续</button>
+            </div>` : ''}
           </div>
-          <div class="home-cta">
-            <div><h2>用一份真实队列，走完一遍完整流程。</h2><p>不需要上传数据，先用内置的脓毒症 ICU 队列体验。</p></div>
-            <button class="btn btn-primary btn-lg" id="start-flow-2">开始 <span class="arw">→</span></button>
-          </div>
+          <div class="ws-flow">确认数据 <span>→</span> 选择方向 <span>→</span> 确认方案 <span>→</span> 运行分析 <span>→</span> 结果与报告</div>
         </div>
       </section>`;
     document.getElementById('start-flow')?.addEventListener('click', startFlow);
@@ -379,6 +347,8 @@
   }
 
   async function startFlow() {
+    state.selected = null; state.cohort = null; state.stats = null; state.manuscript = ''; state.reportFallback = false; state.ideas = [];
+    state.step = 'data'; persist();
     try {
       await loadEDA();
       go('data');
@@ -403,31 +373,18 @@
     const rels = (eda.relationships || []).slice(0, 6);
     app.innerHTML = `<div class="wrap page">
       <div class="kicker">Step 01 / 数据</div>
-      <h1 class="page-title">先确认，这份数据能回答什么。</h1>
-      <p class="page-sub">这是 MIMIC-IV 脓毒症 ICU 队列的 24 小时数据集。先看覆盖范围和变量质量，再决定研究方向。</p>
+      <h1 class="page-title">数据确认</h1>
+      <p class="page-sub">MIMIC-IV 脓毒症 ICU 队列 · 24 小时数据</p>
       <div class="stat-grid">
         <div class="stat"><b>${num(s.tables)}</b><span>数据表</span><em>已扫描并建立关联</em></div>
         <div class="stat"><b>${num(s.patients)}</b><span>可分析患者</span><em>ICU 队列估计值</em></div>
         <div class="stat"><b>${num(s.usable)}</b><span>可用变量</span><em>缺失率 &lt; 5%</em></div>
         <div class="stat"><b>${num(s.cautious)}</b><span>需谨慎变量</span><em>缺失率 5%–30%</em></div>
       </div>
-      <div class="quality"><span class="q-mark">✓</span><div><b>数据质量：可进入分析。</b> ${num(s.columns)} 个字段已完成缺失率与类型评估；${num(s.cautious)} 个变量在建模时需要额外处理。</div></div>
-      <div class="split">
-        <div class="panel"><h3><span class="dot"></span>可以回答</h3><ul>
-          <li><b>队列描述</b>：基线特征、合并症、实验室指标分布。</li>
-          <li><b>组间比较</b>：暴露组与对照组的结局差异。</li>
-          <li><b>时间到事件</b>：住院死亡、ICU 时长等结局。</li>
-          <li><b>探索性关联</b>：多变量回归与亚组分析。</li>
-        </ul></div>
-        <div class="panel negative"><h3><span class="dot"></span>不建议回答</h3><ul>
-          <li><b>因果推断</b>：观察性数据，无法排除未测量混杂。</li>
-          <li><b>院外人群外推</b>：单中心 ICU 队列，外推需谨慎。</li>
-          <li><b>实时预测</b>：24 小时截断数据，不支持在线预警。</li>
-          <li><b>罕见结局</b>：事件数不足时，统计功效有限。</li>
-        </ul></div>
-      </div>
+      <div class="quality"><span class="q-mark">✓</span><div><b>可分析。</b> ${num(s.columns)} 个字段；${num(s.cautious)} 个变量缺失率 5%–30%。</div></div>
+      <p class="data-scope">支持队列描述、组间比较、探索性关联；不支持因果推断与实时预测。</p>
       <div class="section">
-        <div class="section-head"><div><h2>数据构成</h2><p>8 张核心表，覆盖入院、诊断、实验室、用药与结局。</p></div><span class="hint">${num(s.columns)} 个字段</span></div>
+        <div class="section-head"><div><h2>数据构成</h2></div><span class="hint">${num(s.columns)} 个字段</span></div>
         <div class="table-list">
           ${tables.map((t, i) => {
             const tr = (eda.table_reports || []).find(r => r.table === t) || {};
@@ -444,7 +401,7 @@
           </tbody></table>
         </div></details>
       </div>
-      <div class="cta-row"><div class="hint">下一步会从候选方向中，按可行性与创新性筛出适合这份数据的方向。</div><button class="btn btn-primary btn-lg" id="to-directions">用这份数据选方向 <span class="arw">→</span></button></div>
+      <div class="cta-row end"><button class="btn btn-primary btn-lg" id="to-directions">选择研究方向 <span class="arw">→</span></button></div>
     </div>`;
     document.getElementById('to-directions')?.addEventListener('click', () => go('directions'));
   }
@@ -559,8 +516,8 @@
   async function renderDirections() {
     app.innerHTML = `<div class="wrap page">
       <div class="kicker">Step 02 / 方向</div>
-      <h1 class="page-title">从候选方向里，选一个值得做的。</h1>
-      <p class="page-sub">每个方向都带 PICO、所需变量、建议方法和可行性评分。先看能不能做，再看想不想做。</p>
+      <h1 class="page-title">选择研究方向</h1>
+      <p class="page-sub">按可行性与创新性排序。</p>
       <div id="ideas-host"><div class="skeleton" style="height:180px"></div><div class="skeleton" style="height:180px;margin-top:14px"></div></div>
     </div>`;
     try {
@@ -617,12 +574,12 @@
     const f = feasibility(idea);
     app.innerHTML = `<div class="wrap page">
       <div class="kicker">Step 03 / 方案</div>
-      <h1 class="page-title">先把研究方案对齐，再开始跑。</h1>
-      <p class="page-sub">下面这些字段会决定队列怎么建、统计怎么做。确认后再运行，避免跑完才发现人群或结局不对。</p>
+      <h1 class="page-title">确认方案</h1>
+      <p class="page-sub">运行前可修改。</p>
       <div class="protocol-grid">
         <div class="form-card">
           <h2>研究方案</h2>
-          <p class="sub">标题、问题与 PICO 可以修改；变量和方法由系统根据数据可用性生成。</p>
+          <p class="sub">标题、问题与 PICO</p>
           <div class="field"><label>研究标题</label><input id="f-title" value="${esc(idea.title || idea.title_cn || '')}" /></div>
           <div class="field"><label>研究问题</label><textarea id="f-rq">${esc(idea.research_question || '')}</textarea></div>
           <div class="field"><label>研究假设</label><textarea id="f-hypo">${esc(idea.hypothesis || '')}</textarea></div>
@@ -632,25 +589,21 @@
             <div class="field"><label>C <span>对照</span></label><textarea id="f-C">${esc(p.C || '')}</textarea></div>
             <div class="field"><label>O <span>结局</span></label><textarea id="f-O">${esc(p.O || '')}</textarea></div>
           </div>
-          <div class="field"><label>分析备注 <span>可选，会随方案保存</span></label><textarea id="f-notes" placeholder="例如：只纳入首次入 ICU、排除年龄 < 18 岁">${esc(idea.protocol_notes || '')}</textarea></div>
-          <div class="field"><label>数据变量 <span>来自队列，不可在运行前改</span></label><div class="chips">${vars.length ? vars.map(v => `<span class="chip">${esc(v)}</span>`).join('') : '<span class="hint">系统将按 PICO 自动匹配变量</span>'}</div></div>
+          <div class="field"><label>分析备注</label><textarea id="f-notes" placeholder="例如：只纳入首次入 ICU、排除年龄 < 18 岁">${esc(idea.protocol_notes || '')}</textarea></div>
+          <div class="field"><label>数据变量</label><div class="chips">${vars.length ? vars.map(v => `<span class="chip">${esc(v)}</span>`).join('') : '<span class="hint">系统将按 PICO 自动匹配变量</span>'}</div></div>
           <div class="form-foot">
             <button class="btn" id="back-directions">← 返回改方向</button>
             <div style="display:flex;align-items:center;gap:12px"><span class="hint" id="save-state">已保存</span><button class="btn btn-primary" id="start-run">开始分析 <span class="arw">→</span></button></div>
           </div>
         </div>
         <div>
-          <div class="side-card"><h3>系统将执行</h3><ol class="side-steps">
-            <li><i>01</i><span><b>队列提取</b><br>按 PICO 从 ${vars.length || '若干'} 个变量构建分析队列，记录每一步排除人数。</span></li>
-            <li><i>02</i><span><b>统计检验</b><br>前置校验 → 方法匹配 → 执行；建议方法：${esc(method)}。</span></li>
-            <li><i>03</i><span><b>报告生成</b><br>IMRAD 结构，附 Table 1、统计结果与局限。</span></li>
-          </ol></div>
-          <div class="side-card"><h3>方案评估</h3>
-            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span>数据可行度</span><b>${f == null ? '待校验' : f + '/10'}</b></div>
+          <div class="side-card">
+            <div class="side-line"><span>可行度</span><b>${f == null ? '待校验' : f + '/10'}</b></div>
             <div class="progress"><i style="width:${f == null ? 0 : Math.min(100, f * 10)}%"></i></div>
-            <div class="hint" style="margin-top:9px">${f == null ? '自定义方向，运行前会按实际变量与数据完整性校验。' : '综合数据可验证性与统计可行性。低于 7 分建议换方向或调整变量。'}</div>
+            <div class="side-line"><span>建议方法</span><b>${esc(method)}</b></div>
+            <div class="side-line"><span>变量</span><b>${vars.length}</b></div>
           </div>
-          <div class="warn"><b>观察性研究，不是因果结论。</b>结果只能说明关联；未测量混杂、选择偏倚和单中心外推限制需要在报告中说明。</div>
+          <div class="warn">观察性研究，结果为关联，不是因果结论。</div>
         </div>
       </div>
     </div>`;
@@ -715,11 +668,10 @@
     const running = state.running;
     app.innerHTML = `<div class="wrap page">
       <div class="kicker">Step 04 / 运行</div>
-      <h1 class="page-title">${running ? '分析正在按阶段执行。' : (state.stats ? '分析已经完成。' : '分析会按三个阶段执行。')}</h1>
+      <h1 class="page-title">${running ? '运行分析' : (state.stats ? '运行完成' : '运行分析')}</h1>
       <p class="page-sub">${esc(idea.title || '')}</p>
-      ${!state.stats ? '<p class="run-hint">队列提取会读取 24 小时实验室数据；首次运行可能需要几十秒，阶段完成后结果会保存在本机。</p>' : ''}
       <div class="run-head">
-        <div class="run-head-top"><div><h2 id="run-state">${running ? '正在运行' : (state.stats ? '已完成' : '等待开始')}</h2><p id="run-sub">${running ? '可以离开这个页面，回来后仍会从当前阶段继续。' : '确认方案后开始；三步都会留下可检查的产物。'}</p></div><span class="badge" id="run-pct" style="align-self:flex-start">${running ? '进行中' : (state.stats ? '3 / 3' : '待运行')}</span></div>
+        <div class="run-head-top"><div><h2 id="run-state">${running ? '正在运行' : (state.stats ? '已完成' : '等待开始')}</h2><p id="run-sub">${running ? '阶段执行中' : (state.stats ? '三个阶段已完成' : '等待开始')}</p></div><span class="badge" id="run-pct" style="align-self:flex-start">${running ? '进行中' : (state.stats ? '3 / 3' : '待运行')}</span></div>
         <div class="progress"><i id="run-progress" style="width:${state.stats ? 100 : 0}%"></i></div>
         <div class="stages">
           <div class="stage ${state.cohort ? 'done' : ''}" data-stage="cohort"><div class="st-top"><span class="st-dot"></span>STAGE 01</div><b>队列提取</b><span class="st-note">${state.cohort ? num(state.cohort.final_cohort_size || 0) + ' 条记录' : '等待运行'}</span></div>
@@ -728,7 +680,7 @@
         </div>
       </div>
       <div class="run-grid">
-        <div class="console" id="run-log">${running ? '' : '<div class="ln"><b>ready</b><em>点击「开始分析」后，这里会显示每一步的执行记录。</em></div>'}</div>
+        <div class="console" id="run-log">${running ? '' : '<div class="ln"><b>ready</b><em>等待运行</em></div>'}</div>
         <div class="artifacts" id="run-artifacts">
           <div class="artifact-row"><div><b>分析队列</b><span>research_cohort.csv</span></div><span class="${state.cohort ? 'ok' : ''}">${state.cohort ? '已生成' : '待生成'}</span></div>
           <div class="artifact-row"><div><b>统计结果</b><span>表 + 方法 + p 值</span></div><span class="${state.stats ? 'ok' : ''}">${state.stats ? '已生成' : '待生成'}</span></div>
@@ -931,11 +883,14 @@ ${stats.interpretation || ''}
               ${ordered.map(r => `<tr><td>${esc(prettyLabel(r.label) || '—')}</td><td>${esc(prettyMethod(r.method))}</td><td class="num">${esc(r.group0_median != null ? `${r.group0_median} vs ${r.group1_median}` : (r.odds_ratio ? `OR ${r.odds_ratio}` : '—'))}</td><td class="num ${r.significant ? 'sig' : 'ns'}">${esc(fmtP(r.p_value))}</td><td>${r.significant ? '<span class="sig">显著</span>' : '不显著'}</td></tr>`).join('')}
             </tbody></table>` : '<p class="hint">没有统计结果。</p>'}
           </div>
-          <div class="card"><h2>方法 <span>methods</span></h2>
-            <p class="method-lead">样本量 ${num(n)} 条 ICU 记录，显著性阈值 α = 0.05。分析使用 ${esc(usedMethods)}。</p>
-            <ul class="method-list">${ordered.map(r => `<li><b>${esc(prettyLabel(r.label) || '—')}</b>：${esc(prettyMethod(r.method))}，p = ${esc(fmtP(r.p_value))}，${r.significant ? '差异显著' : '差异不显著'}。</li>`).join('')}</ul>
-            <p class="hint">结果为观察性关联，需结合效应量、置信区间与临床意义判断，不能直接解释为因果。</p>
-          </div>
+          <details class="card method-details">
+            <summary><span class="card-title">方法与统计</span><span class="card-en">methods</span></summary>
+            <div class="method-body">
+              <p class="method-lead">样本量 ${num(n)} 条 ICU 记录，显著性阈值 α = 0.05。分析使用 ${esc(usedMethods)}。</p>
+              <ul class="method-list">${ordered.map(r => `<li><b>${esc(prettyLabel(r.label) || '—')}</b>：${esc(prettyMethod(r.method))}，p = ${esc(fmtP(r.p_value))}，${r.significant ? '差异显著' : '差异不显著'}。</li>`).join('')}</ul>
+              <p class="hint">观察性关联，不能直接解释为因果。</p>
+            </div>
+          </details>
         </div>
         <div>
           <div class="card"><h2>质量检查 <span>qc</span></h2><ul class="quality-list">
@@ -953,12 +908,16 @@ ${stats.interpretation || ''}
           </div>
         </div>
       </div>
-      <div class="card" style="margin-top:18px"><h2>报告草稿 <span>manuscript</span></h2><div class="report-wrap md" id="manuscript">${mdToHtml(report)}</div>
-        <div class="result-actions">
-          <button class="btn" id="print-report">打印 / 导出 PDF</button>
-          <button class="btn" id="download-report">下载 Markdown</button>
-          <button class="btn btn-primary" id="new-run">再做一次 <span class="arw">→</span></button>
+      <div class="card report-card">
+        <div class="report-head">
+          <div><h2>报告草稿</h2><span class="card-en">manuscript</span></div>
+          <div class="result-actions">
+            <button class="btn" id="print-report">打印 / PDF</button>
+            <button class="btn" id="download-report">下载 Markdown</button>
+            <button class="btn btn-primary" id="new-run">再做一次 <span class="arw">→</span></button>
+          </div>
         </div>
+        <details class="report-details"><summary>展开全文 · ${num(report.length)} 字符</summary><div class="report-wrap md" id="manuscript">${mdToHtml(report)}</div></details>
       </div>
     </div>`;
     document.getElementById('download-report')?.addEventListener('click', () => {
@@ -986,6 +945,7 @@ ${stats.interpretation || ''}
       history.replaceState(null, '', '#/');
       renderStepper(); renderHome(); window.scrollTo({ top: 0 });
     });
+    window.addEventListener('beforeprint', () => document.querySelectorAll('details').forEach(d => { d.open = true; }));
     window.addEventListener('hashchange', () => {
       const s = (location.hash || '#/').replace('#/', '') || 'home';
       if (s !== state.step && ['home','data','directions','protocol','run','result'].includes(s)) go(s);
