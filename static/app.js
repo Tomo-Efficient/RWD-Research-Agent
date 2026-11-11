@@ -704,14 +704,14 @@
     const running = state.running;
     app.innerHTML = `<div class="wrap page">
       <div class="kicker">Step 04 / 运行</div>
-      <h1 class="page-title">分析正在按阶段执行。</h1>
+      <h1 class="page-title">${running ? '分析正在按阶段执行。' : (state.stats ? '分析已经完成。' : '分析会按三个阶段执行。')}</h1>
       <p class="page-sub">${esc(idea.title || '')}</p>
-      <p class="run-hint">队列提取会读取 24 小时实验室数据；首次运行可能需要几十秒，阶段完成后结果会保存在本机。</p>
+      ${!state.stats ? '<p class="run-hint">队列提取会读取 24 小时实验室数据；首次运行可能需要几十秒，阶段完成后结果会保存在本机。</p>' : ''}
       <div class="run-head">
-        <div class="run-head-top"><div><h2 id="run-state">${running ? '正在运行' : (state.stats ? '已完成' : '等待开始')}</h2><p id="run-sub">${running ? '可以离开这个页面，回来后仍会从当前阶段继续。' : '确认方案后开始；三步都会留下可检查的产物。'}</p></div><span class="badge" id="run-pct" style="align-self:flex-start">${running ? '进行中' : (state.stats ? '完成' : '待运行')}</span></div>
+        <div class="run-head-top"><div><h2 id="run-state">${running ? '正在运行' : (state.stats ? '已完成' : '等待开始')}</h2><p id="run-sub">${running ? '可以离开这个页面，回来后仍会从当前阶段继续。' : '确认方案后开始；三步都会留下可检查的产物。'}</p></div><span class="badge" id="run-pct" style="align-self:flex-start">${running ? '进行中' : (state.stats ? '3 / 3' : '待运行')}</span></div>
         <div class="progress"><i id="run-progress" style="width:${state.stats ? 100 : 0}%"></i></div>
         <div class="stages">
-          <div class="stage ${state.cohort ? 'done' : ''}" data-stage="cohort"><div class="st-top"><span class="st-dot"></span>STAGE 01</div><b>队列提取</b><span class="st-note">${state.cohort ? (state.cohort.final_cohort_size || 0) + ' 条记录' : '等待运行'}</span></div>
+          <div class="stage ${state.cohort ? 'done' : ''}" data-stage="cohort"><div class="st-top"><span class="st-dot"></span>STAGE 01</div><b>队列提取</b><span class="st-note">${state.cohort ? num(state.cohort.final_cohort_size || 0) + ' 条记录' : '等待运行'}</span></div>
           <div class="stage ${state.stats ? 'done' : ''}" data-stage="stats"><div class="st-top"><span class="st-dot"></span>STAGE 02</div><b>统计检验</b><span class="st-note">${state.stats ? (state.stats.results || []).length + ' 项分析' : '等待运行'}</span></div>
           <div class="stage ${state.manuscript ? 'done' : ''}" data-stage="report"><div class="st-top"><span class="st-dot"></span>STAGE 03</div><b>生成报告</b><span class="st-note">${state.manuscript ? '已生成' : '等待运行'}</span></div>
         </div>
@@ -877,6 +877,7 @@ ${stats.interpretation || ''}
     if (!results.some(r => /regression|logistic/i.test(r.method || ''))) {
       out = out.replace(/、逻辑回归/g, '、卡方检验').replace(/逻辑回归/g, '卡方检验');
     }
+    out = out.replace(/\n#{2,3}\s*参考文献\s*$/, '').trim();
     return out;
   }
 
