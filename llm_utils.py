@@ -147,7 +147,7 @@ Return ONLY valid JSON with the exact structure specified in the skill document.
     if key:
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=key, base_url="https://api.deepseek.com")
+            client = OpenAI(api_key=key, base_url="https://api.deepseek.com", timeout=35.0, max_retries=0)
             resp = client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[
@@ -162,7 +162,8 @@ Return ONLY valid JSON with the exact structure specified in the skill document.
             print(f"[DeepSeek Skill2] Error: {e}")
 
     if not text:
-        text = call_llm(_get_skill2_system(), prompt, temperature=0.7)
+        print("[Skill2] LLM unavailable; using template ideas.")
+        return _generate_template_ideas(eda_report, mode)
 
     if text:
         result = _parse_llm_json(text, mode)
@@ -210,7 +211,7 @@ def generate_report(eda_report: dict, ideas: dict, selected_idea: dict, stats_re
     if key:
         try:
             from openai import OpenAI
-            client = OpenAI(api_key=key, base_url="https://api.deepseek.com")
+            client = OpenAI(api_key=key, base_url="https://api.deepseek.com", timeout=90.0, max_retries=0)
             resp = client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[
@@ -225,11 +226,6 @@ def generate_report(eda_report: dict, ideas: dict, selected_idea: dict, stats_re
                 return text
         except Exception as e:
             print(f"[DeepSeek Skill5] Error: {e}")
-
-    text = call_llm(_get_skill5_system(), context, temperature=0.3)
-
-    if text:
-        return text
 
     print("DeepSeek unavailable. Using template report.")
     return _generate_template_report(selected_idea, stats_results)

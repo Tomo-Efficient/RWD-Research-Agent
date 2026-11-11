@@ -47,12 +47,23 @@
     return data;
   }
 
+  let busyTimer = null;
   function busy(title, sub = '') {
     overlayTitle.textContent = title;
     overlaySub.textContent = sub;
     overlay.classList.add('show');
+    clearInterval(busyTimer);
+    const started = Date.now();
+    busyTimer = setInterval(() => {
+      const sec = Math.floor((Date.now() - started) / 1000);
+      overlaySub.textContent = `${sub}${sub ? ' · ' : ''}已等待 ${sec} 秒`;
+    }, 1000);
   }
-  function idle() { overlay.classList.remove('show'); }
+  function idle() {
+    clearInterval(busyTimer);
+    busyTimer = null;
+    overlay.classList.remove('show');
+  }
   let toastTimer;
   function toast(msg) {
     toastEl.textContent = msg;
