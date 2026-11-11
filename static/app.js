@@ -285,7 +285,7 @@
     if (state.eda) return state.eda;
     const st = await api('/api/skill1/status');
     if (st && (st.status === 'completed' || st.tables_found)) { state.eda = st; return st; }
-    busy('正在读取数据', '扫描 8 张表、评估变量质量，通常需要几秒');
+    busy('正在读取数据', '扫描 8 张表、评估变量质量，通常需要 10–30 秒');
     try {
       const out = await api('/api/skill1/run', { method: 'POST', body: {} });
       state.eda = out;
